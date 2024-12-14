@@ -41,5 +41,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "cgpa-calculator"
-          output_location: "cgpa-calculator/out"
+          output_location: "out"
           skip_app_build: true
