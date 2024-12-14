@@ -252,100 +252,152 @@ export default function Home() {
   const cgpa = calculateCGPA(includedCourses)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="text-center mb-12 animate-fade-in-down">
-          <GraduationCap className="w-16 h-16 mx-auto text-blue-600 mb-4" />
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">UAF CGPA Calculator</h1>
-          <p className="text-gray-600">Calculate your CGPA with ease</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {/* Header Section - More Compact */}
+        <div className="text-center mb-10 space-y-3">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center justify-center blur-2xl opacity-20">
+              <div className="w-32 h-32 bg-blue-600 rounded-full"></div>
+            </div>
+            <GraduationCap className="w-14 h-14 mx-auto text-blue-600 mb-4" />
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
+            UAF CGPA Calculator
+          </h1>
+          <p className="text-base text-gray-600 max-w-xl mx-auto">
+            Calculate your CGPA with precision and ease
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="max-w-xl mx-auto mb-12 animate-fade-in-up">
-          <div className="relative">
+        {/* Search Form - More Compact */}
+        <form onSubmit={handleSubmit} className="max-w-lg mx-auto mb-8">
+          <div className="relative group">
             <input
               type="text"
               value={regNumber}
               onChange={(e) => setRegNumber(e.target.value)}
               placeholder="Enter Registration Number (e.g., 2022-ag-7693)"
-              className="w-full px-4 py-3 pl-12 pr-16 rounded-full border-2 border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+              className="w-full px-4 py-3 pl-12 pr-16 rounded-lg border border-gray-200 
+                       focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none 
+                       transition-all duration-300 text-sm bg-white"
             />
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <button
               type="submit"
               disabled={loading}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1.5 
+                       bg-blue-600 text-white rounded-md text-sm font-medium
+                       hover:bg-blue-700 transition-colors disabled:bg-blue-300"
             >
               {loading ? 'Searching...' : 'Search'}
             </button>
           </div>
         </form>
 
+        {/* Loading Bar */}
         {loading && (
           <div className="max-w-xl mx-auto mb-8">
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div className="w-full bg-gray-200 rounded-full h-3">
               <div
-                className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                className="bg-blue-600 h-3 rounded-full transition-all duration-300 
+                         shadow-lg shadow-blue-200"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
           </div>
         )}
 
+        {/* Error Message */}
         {error && (
-          <div className="max-w-xl mx-auto p-4 bg-red-50 rounded-lg flex items-center gap-3 text-red-700 animate-fade-in">
-            <AlertCircle className="w-5 h-5" />
-            <p>{error}</p>
+          <div className="max-w-xl mx-auto p-6 bg-red-50 rounded-2xl flex items-center 
+                       gap-4 text-red-700 animate-fade-in border border-red-100 
+                       shadow-lg shadow-red-100/50">
+            <AlertCircle className="w-6 h-6 flex-shrink-0" />
+            <p className="text-lg">{error}</p>
           </div>
         )}
 
+        {/* Results Section */}
         {result && (
-          <div className="space-y-8 animate-fade-in">
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center gap-4 mb-4">
-                <BookOpen className="w-8 h-8 text-blue-600" />
+          <div className="space-y-6 animate-fade-in">
+            {/* Student Info Card - More Compact */}
+            <div className="bg-white rounded-lg shadow p-4 border border-gray-100">
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-blue-50 rounded-lg">
+                  <BookOpen className="w-6 h-6 text-blue-600" />
+                </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-xl font-semibold text-gray-900">
                     {result.student_info["Student Full Name"]}
                   </h2>
-                  <p className="text-gray-600">{result.student_info["Registration #"]}</p>
+                  <p className="text-sm text-gray-600">{result.student_info["Registration #"]}</p>
                 </div>
               </div>
             </div>
-
-            <div className="flex flex-wrap gap-2 mb-6">
-              {Object.keys(groupBySemester(result.result_table.rows)).map((semester) => (
-                <button
-                  key={semester}
-                  onClick={() => setActiveSemester(semester)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium ${activeSemester === semester
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-600 hover:bg-blue-50'
-                    }`}
-                >
-                  {semester}
-                </button>
-              ))}
+            {/* Semester Cards - Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(groupBySemester(includedCourses)).map(
+                ([semester, courses]: [string, any[]]) => {
+                  const semesterCGPA = calculateSemesterCGPA(courses)
+                  return (
+                    <div key={semester} className="bg-white rounded-lg shadow p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                          <BookOpen className="w-4 h-4 text-blue-600" />
+                          {semester}
+                        </h2>
+                        <span className="text-sm font-medium text-blue-600">
+                          CGPA: {semesterCGPA.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Course</th>
+                              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">Hours</th>
+                              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">Grade</th>
+                              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500"></th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {courses.map((course, index) => (
+                              <tr key={index} className="hover:bg-gray-50">
+                                <td className="px-3 py-2 whitespace-nowrap">{course["Course Code"]}</td>
+                                <td className="px-2 py-2">{course["Credit Hours"]}</td>
+                                <td className="px-2 py-2">
+                                  <span className={`px-2 py-0.5 rounded text-xs font-medium 
+                                               ${getGradeColor(course.Grade)}`}>
+                                    {course.Grade}
+                                  </span>
+                                </td>
+                                <td className="px-2 py-2">
+                                  <button
+                                    onClick={() => handleRemoveCourse(course["Course Code"])}
+                                    className="text-xs text-red-500 hover:text-red-700"
+                                  >
+                                    ×
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )
+                }
+              )}
             </div>
 
-            {/* Display cards for each semester */}
-            {Object.entries(groupBySemester(includedCourses)).map(
-              ([semester, courses]: [string, any[]]) => {
-                const semesterCGPA = calculateSemesterCGPA(courses)
-                return (
-                  <SemesterCard
-                    key={semester}
-                    semester={semester}
-                    courses={courses}
-                    onRemoveCourse={handleRemoveCourse}
-                    semesterCGPA={semesterCGPA}
-                  />
-                )
-              }
-            )}
-
-            {/* Overall CGPA */}
-            <div className="mt-6">
-              <h2 className="text-2xl font-bold">Overall CGPA: {cgpa.toFixed(2)}</h2>
+            {/* Overall CGPA - More Compact */}
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg 
+                         shadow p-4 text-white">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Overall CGPA</h2>
+                <p className="text-3xl font-bold">{cgpa.toFixed(2)}</p>
+              </div>
             </div>
           </div>
         )}
