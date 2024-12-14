@@ -51,3 +51,4 @@ def get_result():
             "error": "Failed to fetch result",
             "details": str(e)
         }), 500
+ 
