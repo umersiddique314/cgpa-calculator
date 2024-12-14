@@ -8,7 +8,7 @@ export interface ResultData {
     rows: CourseRow[];
   };
 }
- 
+   
 export interface CourseRow {
   Assignment: string;
   "Course Code": string;
