@@ -5,7 +5,7 @@ import { AlertCircle, BookOpen } from 'lucide-react'
 import { Header } from './components/Header'
 import { SearchForm } from './components/SearchForm'
 import { SemesterCard } from './components/SemesterCard'
-import { ResultData } from './types'
+import { ResultData, CourseRow } from './types'
 import { calculateCGPA, groupBySemester, calculateSemesterCGPA } from './utils/calculations'
 
 export default function Home() {
@@ -14,7 +14,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [progress, setProgress] = useState(0)
-  const [includedCourses, setIncludedCourses] = useState<any[]>([])
+  const [includedCourses, setIncludedCourses] = useState<CourseRow[]>([])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

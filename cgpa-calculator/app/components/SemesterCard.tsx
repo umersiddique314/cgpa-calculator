@@ -2,11 +2,11 @@ import { BookOpen } from 'lucide-react'
 import { getGradeColor } from '../utils/gradeUtils'
 import { CourseRow } from '../types'
 
-interface SemesterCardProps {
-  semester: string
-  courses: CourseRow[]
-  semesterCGPA: number
-  onRemoveCourse: (courseCode: string) => void
+export interface SemesterCardProps {
+  semester: string;
+  courses: CourseRow[];
+  semesterCGPA: number;
+  onRemoveCourse: (courseCode: string) => void;
 }
 
 export const SemesterCard = ({ semester, courses, semesterCGPA, onRemoveCourse }: SemesterCardProps) => {

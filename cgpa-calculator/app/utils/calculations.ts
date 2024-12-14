@@ -1,4 +1,6 @@
-export const calculateGradePoints = (course: any) => {
+import { CourseRow } from '../types'
+
+export const calculateGradePoints = (course: CourseRow) => {
   const totalMarks = parseFloat(course.Total)
   const creditHours = parseCreditHours(course["Credit Hours"])
   if (!creditHours || isNaN(totalMarks)) return 0
@@ -48,7 +50,7 @@ export const parseCreditHours = (creditHoursStr: string) => {
   return null
 }
 
-export const calculateCGPA = (courses: any[]) => {
+export const calculateCGPA = (courses: CourseRow[]) => {
   let totalGradePoints = 0
   let totalCreditHours = 0
 
@@ -64,15 +66,17 @@ export const calculateCGPA = (courses: any[]) => {
   return (totalGradePoints / totalCreditHours)
 }
 
-export const calculateSemesterCGPA = (courses: any[]) => {
+export const calculateSemesterCGPA = (courses: CourseRow[]) => {
   return calculateCGPA(courses)
 }
 
-export const groupBySemester = (rows: any[]) => {
-  return rows?.reduce((acc: any, course) => {
-    const sem = course.Semester
-    if (!acc[sem]) acc[sem] = []
-    acc[sem].push(course)
-    return acc
-  }, {})
+export function groupBySemester(courses: CourseRow[]): Record<string, CourseRow[]> {
+  return courses.reduce((acc, course) => {
+    const semester = course.Semester;
+    if (!acc[semester]) {
+      acc[semester] = [];
+    }
+    acc[semester].push(course);
+    return acc;
+  }, {} as Record<string, CourseRow[]>);
 }
