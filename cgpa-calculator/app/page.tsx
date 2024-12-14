@@ -104,7 +104,7 @@ export default function Home() {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(groupBySemester(includedCourses)).map(
+              {Object.entries(groupBySemester(includedCourses)).map( 
                 ([semester, courses]) => (
                   <SemesterCard
                     key={semester}
