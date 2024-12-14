@@ -2,7 +2,7 @@ name: Deploy Frontend
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'cgpa-calculator/**'
 
@@ -13,7 +13,7 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     name: Build and Deploy Frontend
-    
+
     steps:
       - uses: actions/checkout@v3
 
@@ -41,5 +41,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "cgpa-calculator"
-          output_location: ".next"
+          output_location: "cgpa-calculator/out"
           skip_app_build: true
