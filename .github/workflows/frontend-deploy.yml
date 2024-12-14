@@ -30,9 +30,7 @@ jobs:
 
       - name: Build Application
         working-directory: ./cgpa-calculator
-        run: |
-          npm run build
-          npm run export
+        run: npm run build
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.AZURE_API_URL }}
 
