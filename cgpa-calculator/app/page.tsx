@@ -357,6 +357,7 @@ export default function Home() {
                             <tr>
                               <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Course</th>
                               <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">Hours</th>
+                              <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">Marks Obtained</th>
                               <th className="px-2 py-2 text-left text-xs font-medium text-gray-500">Grade</th>
                               <th className="px-2 py-2 text-left text-xs font-medium text-gray-500"></th>
                             </tr>
@@ -366,6 +367,7 @@ export default function Home() {
                               <tr key={index} className="hover:bg-gray-50">
                                 <td className="px-3 py-2 whitespace-nowrap">{course["Course Code"]}</td>
                                 <td className="px-2 py-2">{course["Credit Hours"]}</td>
+                                <td className="px-2 py-2">{course["Total"]}</td>
                                 <td className="px-2 py-2">
                                   <span className={`px-2 py-0.5 rounded text-xs font-medium 
                                                ${getGradeColor(course.Grade)}`}>
