@@ -27,7 +27,9 @@ export default function Home() {
     }, 300)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/result?reg_number=${regNumber}`)
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL ;
+      const cleanApiUrl = apiUrl.replace(/\/+$/, '');
+      const response = await fetch(`${cleanApiUrl}/result?reg_number=${regNumber}`)
       const data = await response.json()
 
       if (data.status === 'success') {

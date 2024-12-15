@@ -53,21 +53,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            # Configure container settings
-            az webapp config container set \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group uaf-cgpa-rg \
-              --docker-registry-server-url https://${{ env.CONTAINER_REGISTRY }}.azurecr.io \
-              --docker-registry-server-user ${{ secrets.ACR_USERNAME }} \
-              --docker-registry-server-password ${{ secrets.ACR_PASSWORD }}
-
-            # Update container image
-            az webapp config set \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group uaf-cgpa-rg \
-              --linux-fx-version "DOCKER|${{ env.CONTAINER_REGISTRY }}.azurecr.io/cgpa-frontend:${{ github.sha }}"
-
-            # Configure all app settings in one command
+            # Set all app settings at once with json format
             az webapp config appsettings set \
               --name ${{ env.AZURE_WEBAPP_NAME }} \
               --resource-group uaf-cgpa-rg \
@@ -75,11 +61,13 @@ jobs:
                 WEBSITES_PORT=3000 \
                 NODE_ENV=production \
                 WEBSITES_ENABLE_APP_SERVICE_STORAGE=false \
-                NEXT_PUBLIC_API_URL="${{ secrets.AZURE_API_URL }}"
+                NEXT_PUBLIC_API_URL="https://uaf-cgpa-api.azurewebsites.net" \
+                DOCKER_ENABLE_CI=true \
+                DOCKER_REGISTRY_SERVER_URL="https://${{ env.CONTAINER_REGISTRY }}.azurecr.io" \
+                DOCKER_REGISTRY_SERVER_USERNAME="${{ secrets.ACR_USERNAME }}" \
+                DOCKER_REGISTRY_SERVER_PASSWORD="${{ secrets.ACR_PASSWORD }}"
 
-            # Enable always on
-            az webapp config set \
+            # Force a restart to pick up new settings
+            az webapp restart \
               --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group uaf-cgpa-rg \
-              --always-on true \
-              --startup-file "node server.js"
+              --resource-group uaf-cgpa-rg
