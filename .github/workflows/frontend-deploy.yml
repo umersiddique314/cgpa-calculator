@@ -25,7 +25,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: cgpa-calculator/package-lock.json
 
-      - name: Install All Dependencies
+      - name: Install Dependencies
         working-directory: ./cgpa-calculator
         run: npm ci
 
@@ -35,12 +35,19 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.AZURE_API_URL }}
 
+      - name: Prepare Deployment Package
+        working-directory: ./cgpa-calculator
+        run: |
+          cp -r .next/standalone/* .
+          cp -r .next/static .next/standalone/.next/
+          cp -r public .next/standalone/
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FRONTEND }}
-          package: ./cgpa-calculator
+          package: ./cgpa-calculator/.next/standalone
 
       - name: Azure Login
         uses: azure/login@v1
@@ -65,4 +72,4 @@ jobs:
                 PORT=3000 \
                 NODE_ENV=production \
                 WEBSITE_RUN_FROM_PACKAGE=0 \
-                START_COMMAND="npm start"
+                START_COMMAND="next start"

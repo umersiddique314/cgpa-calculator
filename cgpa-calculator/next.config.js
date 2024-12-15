@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	output: 'export',
-  };
-  
-  module.exports = nextConfig;
-   
+  output: 'standalone',
+  experimental: {
+    // Required for production deployment on Azure
+    outputFileTracingRoot: undefined
+  }
+}
+
+module.exports = nextConfig
