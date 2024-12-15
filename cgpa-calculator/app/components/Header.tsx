@@ -8,7 +8,7 @@ export const Header = () => {
           <div className="w-32 h-32 bg-blue-600 rounded-full"></div>
         </div>
         <GraduationCap className="w-14 h-14 mx-auto text-blue-600 mb-4" />
-      </div> 
+      </div>  
       <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
         UAF CGPA Calculator
       </h1>

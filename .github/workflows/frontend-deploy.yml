@@ -67,23 +67,19 @@ jobs:
               --resource-group uaf-cgpa-rg \
               --linux-fx-version "DOCKER|${{ env.CONTAINER_REGISTRY }}.azurecr.io/cgpa-frontend:${{ github.sha }}"
 
-            # Update app settings one by one
+            # Configure all app settings in one command
             az webapp config appsettings set \
               --name ${{ env.AZURE_WEBAPP_NAME }} \
               --resource-group uaf-cgpa-rg \
-              --settings WEBSITES_PORT=3000
+              --settings \
+                WEBSITES_PORT=3000 \
+                NODE_ENV=production \
+                WEBSITES_ENABLE_APP_SERVICE_STORAGE=false \
+                NEXT_PUBLIC_API_URL="${{ secrets.AZURE_API_URL }}"
 
-            az webapp config appsettings set \
+            # Enable always on
+            az webapp config set \
               --name ${{ env.AZURE_WEBAPP_NAME }} \
               --resource-group uaf-cgpa-rg \
-              --settings NODE_ENV=production
-
-            az webapp config appsettings set \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group uaf-cgpa-rg \
-              --settings NEXT_PUBLIC_API_URL=${{ secrets.AZURE_API_URL }}
-
-            az webapp config appsettings set \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group uaf-cgpa-rg \
-              --settings WEBSITES_ENABLE_APP_SERVICE_STORAGE=false
+              --always-on true \
+              --startup-file "node server.js"
