@@ -9,6 +9,7 @@ on:
 env:
   NODE_VERSION: '18'
   AZURE_WEBAPP_NAME: 'uaf-cgpa-frontend'
+  CONTAINER_REGISTRY: 'uafcgparegistry'
 
 jobs:
   build_and_deploy:
@@ -18,63 +19,49 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Azure Login
+        uses: azure/login@v1
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: cgpa-calculator/package-lock.json
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Install Dependencies
-        working-directory: ./cgpa-calculator
-        run: npm ci
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-      - name: Build Application
-        working-directory: ./cgpa-calculator
-        run: npm run build
-        env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.AZURE_API_URL }}
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.CONTAINER_REGISTRY }}.azurecr.io
+          use-identity: true
 
-      - name: Prepare Deployment Package
-        working-directory: ./cgpa-calculator
-        run: |
-          mkdir -p deploy
-          cp -r .next deploy/
-          cp -r public deploy/
-          cp package.json deploy/
-          cp server.js deploy/
-          cp package-lock.json deploy/
-          cd deploy
-          npm ci --production
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./cgpa-calculator
+          push: true
+          tags: ${{ env.CONTAINER_REGISTRY }}.azurecr.io/cgpa-frontend:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.AZURE_API_URL }}
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_FRONTEND }}
-          package: ./cgpa-calculator/deploy
-
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          images: ${{ env.CONTAINER_REGISTRY }}.azurecr.io/cgpa-frontend:${{ github.sha }}
 
       - name: Configure Web App Settings
         uses: azure/CLI@v1
         with:
           inlineScript: |
             az webapp config set \
-              --name uaf-cgpa-frontend \
+              --name ${{ env.AZURE_WEBAPP_NAME }} \
               --resource-group uaf-cgpa-rg \
-              --linux-fx-version "NODE|18-lts"
+              --linux-fx-version "DOCKER|${{ env.CONTAINER_REGISTRY }}.azurecr.io/cgpa-frontend:${{ github.sha }}"
             
-            az webapp config appsettings set \
-              --name uaf-cgpa-frontend \
+            # Configure managed identity for container registry
+            az webapp config container set \
+              --name ${{ env.AZURE_WEBAPP_NAME }} \
               --resource-group uaf-cgpa-rg \
-              --settings \
-                SCM_DO_BUILD_DURING_DEPLOYMENT=false \
-                ENABLE_ORYX_BUILD=false \
-                PORT=3000 \
-                NODE_ENV=production \
-                WEBSITE_RUN_FROM_PACKAGE=0 \
-                START_COMMAND="node server.js"
+              --docker-registry-server-url https://${{ env.CONTAINER_REGISTRY }}.azurecr.io \
+              --docker-registry-server-user "" \
+              --docker-registry-server-password "" \
+              --use-managed-identity true
