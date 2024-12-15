@@ -31,7 +31,8 @@ jobs:
         uses: azure/docker-login@v1
         with:
           login-server: ${{ env.CONTAINER_REGISTRY }}.azurecr.io
-          use-identity: true
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
