@@ -53,12 +53,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az webapp config set \
-              --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group uaf-cgpa-rg \
-              --linux-fx-version "DOCKER|${{ env.CONTAINER_REGISTRY }}.azurecr.io/cgpa-frontend:${{ github.sha }}"
-            
-            # Configure container settings with managed identity
+            # Configure container settings
             az webapp config container set \
               --name ${{ env.AZURE_WEBAPP_NAME }} \
               --resource-group uaf-cgpa-rg \
@@ -66,16 +61,29 @@ jobs:
               --docker-registry-server-user ${{ secrets.ACR_USERNAME }} \
               --docker-registry-server-password ${{ secrets.ACR_PASSWORD }}
 
-            # Enable system-assigned managed identity if not already enabled
-            az webapp identity assign \
+            # Update container image
+            az webapp config set \
               --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group uaf-cgpa-rg
+              --resource-group uaf-cgpa-rg \
+              --linux-fx-version "DOCKER|${{ env.CONTAINER_REGISTRY }}.azurecr.io/cgpa-frontend:${{ github.sha }}"
 
-            # Update app settings
+            # Update app settings one by one
             az webapp config appsettings set \
               --name ${{ env.AZURE_WEBAPP_NAME }} \
               --resource-group uaf-cgpa-rg \
-              --settings \
-                WEBSITES_PORT=3000 \
-                NODE_ENV=production \
-                NEXT_PUBLIC_API_URL=${{ secrets.AZURE_API_URL }}
+              --settings WEBSITES_PORT=3000
+
+            az webapp config appsettings set \
+              --name ${{ env.AZURE_WEBAPP_NAME }} \
+              --resource-group uaf-cgpa-rg \
+              --settings NODE_ENV=production
+
+            az webapp config appsettings set \
+              --name ${{ env.AZURE_WEBAPP_NAME }} \
+              --resource-group uaf-cgpa-rg \
+              --settings NEXT_PUBLIC_API_URL=${{ secrets.AZURE_API_URL }}
+
+            az webapp config appsettings set \
+              --name ${{ env.AZURE_WEBAPP_NAME }} \
+              --resource-group uaf-cgpa-rg \
+              --settings WEBSITES_ENABLE_APP_SERVICE_STORAGE=false
