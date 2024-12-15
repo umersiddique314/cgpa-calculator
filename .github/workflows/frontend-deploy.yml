@@ -38,9 +38,11 @@ jobs:
       - name: Prepare Deployment Package
         working-directory: ./cgpa-calculator
         run: |
-          cp -r .next/standalone/* .
-          cp -r .next/static .next/standalone/.next/
-          cp -r public .next/standalone/
+          mkdir -p deploy
+          cp -r .next/standalone/* deploy/
+          cp -r .next/static deploy/.next/
+          cp -r public deploy/
+          cp package.json deploy/
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
@@ -72,4 +74,4 @@ jobs:
                 PORT=3000 \
                 NODE_ENV=production \
                 WEBSITE_RUN_FROM_PACKAGE=0 \
-                START_COMMAND="next start"
+                START_COMMAND="node server.js"

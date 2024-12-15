@@ -2,9 +2,10 @@
 const nextConfig = {
   output: 'standalone',
   experimental: {
-    // Required for production deployment on Azure
-    outputFileTracingRoot: undefined
-  }
+    outputFileTracingRoot: undefined,
+  },
+  poweredByHeader: false,
+  serverMinification: false
 }
 
 module.exports = nextConfig
