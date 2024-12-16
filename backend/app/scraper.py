@@ -2,43 +2,93 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.edge.service import Service as EdgeService
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.edge.options import Options as EdgeOptions
 from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.firefox import GeckoDriverManager
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from config import Config
 import logging
 import os
 
+class BrowserFactory:
+    @staticmethod
+    def create_driver(browser_type):
+        os.environ['WDM_LOG'] = Config.WDM_LOG_LEVEL
+        os.environ['WDM_LOCAL'] = str(int(Config.WDM_LOCAL))
+        os.environ['WDM_SSL_VERIFY'] = str(int(Config.WDM_SSL_VERIFY))
+        os.environ['WDM_CACHE_DIR'] = Config.DRIVER_CACHE_PATH
+
+        common_arguments = [
+            "--headless=new",
+            "--disable-gpu",
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
+        ]
+
+        try:
+            if browser_type == "chrome":
+                options = ChromeOptions()
+                for arg in common_arguments:
+                    options.add_argument(arg)
+                options.add_argument("--blink-settings=imagesEnabled=false")
+                
+                if Config.IS_PRODUCTION:
+                    options.binary_location = Config.CHROME_BINARY_PATH
+                
+                driver = webdriver.Chrome(
+                    service=ChromeService(ChromeDriverManager().install()),
+                    options=options
+                )
+                return driver
+
+            elif browser_type == "firefox":
+                options = FirefoxOptions()
+                for arg in common_arguments:
+                    options.add_argument(arg)
+                
+                if Config.IS_PRODUCTION:
+                    options.binary_location = Config.FIREFOX_BINARY_PATH
+                
+                driver = webdriver.Firefox(
+                    service=FirefoxService(GeckoDriverManager().install()),
+                    options=options
+                )
+                return driver
+
+            elif browser_type == "edge":
+                options = EdgeOptions()
+                for arg in common_arguments:
+                    options.add_argument(arg)
+                
+                if Config.IS_PRODUCTION:
+                    options.binary_location = Config.EDGE_BINARY_PATH
+                
+                driver = webdriver.Edge(
+                    service=EdgeService(EdgeChromiumDriverManager().install()),
+                    options=options
+                )
+                return driver
+
+            else:
+                raise ValueError(f"Unsupported browser type: {browser_type}")
+
+        except Exception as e:
+            logging.error(f"Failed to create {browser_type} driver: {str(e)}")
+            raise
 
 class UAFScraper:
     def __init__(self):
-        try:
-            if Config.IS_PRODUCTION:
-                self.service = Service(Config.CHROMEDRIVER_PATH)
-            else:
-                self.service = Service(ChromeDriverManager().install())
-
-            self.chrome_options = Options()
-            self.chrome_options.add_argument("--headless")
-            self.chrome_options.add_argument("--disable-gpu")
-            self.chrome_options.add_argument("--no-sandbox")
-            self.chrome_options.add_argument("--disable-dev-shm-usage")
-            self.chrome_options.add_argument("--disable-extensions")
-            self.chrome_options.add_argument("--dns-prefetch-disable")
-            self.chrome_options.add_argument("--blink-settings=imagesEnabled=false")
-            
-            if Config.IS_PRODUCTION:
-                self.chrome_options.binary_location = Config.CHROME_BINARY_PATH
-            
-            self.chrome_options.page_load_strategy = "eager"
-        except Exception as e:
-            logging.error(f"Failed to initialize Chrome options: {str(e)}")
-            raise
+        self.browser_type = Config.BROWSER_TYPE
 
     def get_result_html(self, reg_number):
         driver = None
         try:
-            driver = webdriver.Chrome(service=self.service, options=self.chrome_options)
+            driver = BrowserFactory.create_driver(self.browser_type)
             driver.set_page_load_timeout(Config.CHROME_TIMEOUT)
             driver.set_script_timeout(Config.CHROME_TIMEOUT)
 

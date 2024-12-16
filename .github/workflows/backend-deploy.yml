@@ -20,14 +20,30 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
 
-      - name: Install Chrome and ChromeDriver
+      - name: Install Browsers and Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip
+          sudo apt-get install -y wget unzip xvfb
+
+          # Chrome
           wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
           sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
           sudo apt-get update
-          sudo apt-get install -y google-chrome-stable chromium-chromedriver
+          sudo apt-get install -y google-chrome-stable
+
+          # Firefox
+          sudo apt-get install -y firefox
+
+          # Edge
+          curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+          sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
+          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-dev.list'
+          sudo apt-get update
+          sudo apt-get install -y microsoft-edge-stable
+
+          # Create cache directory
+          sudo mkdir -p /tmp/webdriver
+          sudo chmod 777 /tmp/webdriver
 
       - name: Install Dependencies
         working-directory: ./backend
@@ -41,12 +57,16 @@ jobs:
           echo "DEBUG=False" >> .env
           echo "HOST=0.0.0.0" >> .env
           echo "PORT=8000" >> .env
-          echo "CACHE_TIMEOUT=3600" >> .env
-          echo "SCRAPER_TIMEOUT=20" >> .env
-          echo "CHROME_TIMEOUT=10" >> .env
           echo "ENVIRONMENT=production" >> .env
+          echo "BROWSER_TYPE=chrome" >> .env
           echo "CHROME_BINARY_PATH=/usr/bin/google-chrome" >> .env
-          echo "CHROMEDRIVER_PATH=/usr/bin/chromedriver"
+          echo "FIREFOX_BINARY_PATH=/usr/bin/firefox" >> .env
+          echo "EDGE_BINARY_PATH=/usr/bin/microsoft-edge" >> .env
+          echo "DRIVER_CACHE_PATH=/tmp/webdriver" >> .env
+          echo "WDM_LOG_LEVEL=INFO" >> .env
+          echo "WDM_LOCAL=1" >> .env
+          echo "WDM_SSL_VERIFY=1" >> .env
+          echo "WDM_CACHE_DIR=/tmp/webdriver" >> .env
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
@@ -67,7 +87,8 @@ jobs:
             az webapp config set \
               --name uaf-cgpa-api \
               --resource-group uaf-cgpa-rg \
-              --linux-fx-version "PYTHON|3.9"
+              --linux-fx-version "PYTHON|3.9" \
+              --startup-file "gunicorn --bind=0.0.0.0:8000 app:app"
             
             az webapp config appsettings set \
               --name uaf-cgpa-api \
@@ -75,9 +96,7 @@ jobs:
               --settings \
                 SCM_DO_BUILD_DURING_DEPLOYMENT=true \
                 ENABLE_ORYX_BUILD=true \
-                DEBUG=False \
-                HOST=0.0.0.0 \
-                PORT=8000 \
-                ENVIRONMENT=production \
-                CHROME_BINARY_PATH=/usr/bin/google-chrome \
-                CHROMEDRIVER_PATH=/usr/bin/chromedriver
+                BROWSER_TYPE=chrome \
+                WDM_LOCAL=1 \
+                WDM_SSL_VERIFY=1 \
+                WEBSITES_PORT=8000
