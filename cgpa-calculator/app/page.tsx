@@ -28,8 +28,7 @@ export default function Home() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://uaf-cgpa-api.azurewebsites.net";
-      const cleanApiUrl = apiUrl.replace(/\/+$/, '');
-      const response = await fetch(`${cleanApiUrl}/result?reg_number=${regNumber}`)
+         const response = await fetch(`${apiUrl}/api/result?reg_number=${regNumber}`)
       const data = await response.json()
 
       if (data.status === 'success') {
