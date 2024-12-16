@@ -10,3 +10,6 @@ class Config:
     CACHE_TIMEOUT = int(os.getenv('CACHE_TIMEOUT', 3600))
     SCRAPER_TIMEOUT = int(os.getenv('SCRAPER_TIMEOUT', 20))
     CHROME_TIMEOUT = int(os.getenv('CHROME_TIMEOUT', 10))
+    CHROME_BINARY_PATH = os.getenv('CHROME_BINARY_PATH', '/usr/bin/google-chrome')
+    CHROMEDRIVER_PATH = os.getenv('CHROMEDRIVER_PATH', '/usr/local/bin/chromedriver')
+    IS_PRODUCTION = os.getenv('ENVIRONMENT', 'development').lower() == 'production'

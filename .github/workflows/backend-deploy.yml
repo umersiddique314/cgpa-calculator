@@ -20,6 +20,15 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
 
+      - name: Install Chrome and ChromeDriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip
+          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable chromium-chromedriver
+
       - name: Install Dependencies
         working-directory: ./backend
         run: |
@@ -35,6 +44,9 @@ jobs:
           echo "CACHE_TIMEOUT=3600" >> .env
           echo "SCRAPER_TIMEOUT=20" >> .env
           echo "CHROME_TIMEOUT=10" >> .env
+          echo "ENVIRONMENT=production" >> .env
+          echo "CHROME_BINARY_PATH=/usr/bin/google-chrome" >> .env
+          echo "CHROMEDRIVER_PATH=/usr/bin/chromedriver"
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
@@ -65,4 +77,7 @@ jobs:
                 ENABLE_ORYX_BUILD=true \
                 DEBUG=False \
                 HOST=0.0.0.0 \
-                PORT=8000
+                PORT=8000 \
+                ENVIRONMENT=production \
+                CHROME_BINARY_PATH=/usr/bin/google-chrome \
+                CHROMEDRIVER_PATH=/usr/bin/chromedriver
