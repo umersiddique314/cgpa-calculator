@@ -88,7 +88,7 @@ jobs:
               --name uaf-cgpa-api \
               --resource-group uaf-cgpa-rg \
               --linux-fx-version "PYTHON|3.9" \
-              --startup-file "gunicorn --bind=0.0.0.0:8000 --timeout 600 application:app"
+              --startup-file "gunicorn --bind=0.0.0.0:8000 --timeout 600 wsgi:app"
             
             az webapp config appsettings set \
               --name uaf-cgpa-api \
@@ -100,4 +100,4 @@ jobs:
                 WDM_LOCAL=1 \
                 WDM_SSL_VERIFY=1 \
                 WEBSITES_PORT=8000 \
-                PYTHONPATH="/home/site/wwwroot"
+                PYTHONPATH="/home/site/wwwroot/backend"
