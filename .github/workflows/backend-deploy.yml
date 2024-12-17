@@ -88,7 +88,7 @@ jobs:
               --name uaf-cgpa-api \
               --resource-group uaf-cgpa-rg \
               --linux-fx-version "PYTHON|3.9" \
-              --startup-file "gunicorn --bind=0.0.0.0:8000 wsgi:app"
+              --startup-file "gunicorn --bind=0.0.0.0:8000 application:app"
             
             az webapp config appsettings set \
               --name uaf-cgpa-api \
