@@ -26,24 +26,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Create .env file
+      - name: Prepare deployment files
         working-directory: ./backend
         run: |
-          echo "DEBUG=False" >> .env
-          echo "HOST=0.0.0.0" >> .env
-          echo "PORT=8000" >> .env
-          echo "ENVIRONMENT=production" >> .env
-          echo "BROWSER_TYPE=chrome" >> .env
-          echo "CHROME_TIMEOUT=30" >> .env
-
-      - name: Create gunicorn.conf.py
-        working-directory: ./backend
-        run: |
-          echo "bind = '0.0.0.0:8000'" > gunicorn.conf.py
-          echo "workers = 4" >> gunicorn.conf.py
-          echo "timeout = 600" >> gunicorn.conf.py
-          echo "accesslog = '-'" >> gunicorn.conf.py
-          echo "errorlog = '-'" >> gunicorn.conf.py
+          echo "gunicorn --bind=0.0.0.0:8000 --timeout=600 application:app" > startup.txt
+          
+          # Create deployment command file
+          echo "cd /home/site/wwwroot" > deploy.sh
+          echo "python -m pip install --upgrade pip" >> deploy.sh
+          echo "pip install -r requirements.txt" >> deploy.sh
+          echo "gunicorn --bind=0.0.0.0:8000 --timeout=600 application:app" >> deploy.sh
+          chmod +x deploy.sh
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
@@ -51,6 +44,7 @@ jobs:
           app-name: 'uaf-cgpa-api'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ./backend
+          startup-command: 'python -m gunicorn application:app'
 
       - name: Azure Login
         uses: azure/login@v1
@@ -61,14 +55,13 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            # Configure basic settings
             az webapp config set \
               --name uaf-cgpa-api \
               --resource-group uaf-cgpa-rg \
               --linux-fx-version "PYTHON|3.9" \
-              --always-on true
+              --always-on true \
+              --startup-file "startup.txt"
 
-            # Configure app settings
             az webapp config appsettings set \
               --name uaf-cgpa-api \
               --resource-group uaf-cgpa-rg \
@@ -76,9 +69,8 @@ jobs:
                 WEBSITES_PORT=8000 \
                 SCM_DO_BUILD_DURING_DEPLOYMENT=true \
                 ENABLE_ORYX_BUILD=true \
-                GUNICORN_CMD_ARGS="--bind=0.0.0.0:8000 --workers=4 --timeout=600 --access-logfile - --error-logfile - --config gunicorn.conf.py" \
+                PORT=8000 \
                 FLASK_APP=application.py
 
-            # Restart the web app
             az webapp restart --name uaf-cgpa-api --resource-group uaf-cgpa-rg
 
