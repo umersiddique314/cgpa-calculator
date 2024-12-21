@@ -15,64 +15,60 @@ from config import Config
 import logging
 import os
 
+
 class BrowserFactory:
     @staticmethod
     def create_driver(browser_type):
-        os.environ['WDM_LOG'] = Config.WDM_LOG_LEVEL
-        os.environ['WDM_LOCAL'] = str(int(Config.WDM_LOCAL))
-        os.environ['WDM_SSL_VERIFY'] = str(int(Config.WDM_SSL_VERIFY))
-        os.environ['WDM_CACHE_DIR'] = Config.DRIVER_CACHE_PATH
-
-        common_arguments = [
-            "--headless=new",
-            "--disable-gpu",
-            "--no-sandbox",
-            "--disable-dev-shm-usage",
-        ]
-
         try:
+            os.environ["WDM_LOG"] = Config.WDM_LOG_LEVEL
+            os.environ["WDM_LOCAL"] = str(int(Config.WDM_LOCAL))
+            os.environ["WDM_SSL_VERIFY"] = str(int(Config.WDM_SSL_VERIFY))
+            os.environ["WDM_CACHE_DIR"] = Config.DRIVER_CACHE_PATH
+
+            common_arguments = [
+                "--headless=new",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--disable-extensions",
+                "--disable-software-rasterizer",
+                "--ignore-certificate-errors"
+            ]
+
             if browser_type == "chrome":
                 options = ChromeOptions()
                 for arg in common_arguments:
                     options.add_argument(arg)
+                options.add_argument("--remote-debugging-port=9222")
                 options.add_argument("--blink-settings=imagesEnabled=false")
-                
+
                 if Config.IS_PRODUCTION:
                     options.binary_location = Config.CHROME_BINARY_PATH
-                
-                driver = webdriver.Chrome(
-                    service=ChromeService(ChromeDriverManager().install()),
-                    options=options
-                )
-                return driver
+
+                service = ChromeService(ChromeDriverManager().install())
+                return webdriver.Chrome(service=service, options=options)
 
             elif browser_type == "firefox":
                 options = FirefoxOptions()
                 for arg in common_arguments:
                     options.add_argument(arg)
-                
+
                 if Config.IS_PRODUCTION:
                     options.binary_location = Config.FIREFOX_BINARY_PATH
-                
-                driver = webdriver.Firefox(
-                    service=FirefoxService(GeckoDriverManager().install()),
-                    options=options
-                )
-                return driver
+
+                service = FirefoxService(GeckoDriverManager().install())
+                return webdriver.Firefox(service=service, options=options)
 
             elif browser_type == "edge":
                 options = EdgeOptions()
                 for arg in common_arguments:
                     options.add_argument(arg)
-                
+
                 if Config.IS_PRODUCTION:
                     options.binary_location = Config.EDGE_BINARY_PATH
-                
-                driver = webdriver.Edge(
-                    service=EdgeService(EdgeChromiumDriverManager().install()),
-                    options=options
-                )
-                return driver
+
+                service = EdgeService(EdgeChromiumDriverManager().install())
+                return webdriver.Edge(service=service, options=options)
 
             else:
                 raise ValueError(f"Unsupported browser type: {browser_type}")
@@ -80,6 +76,7 @@ class BrowserFactory:
         except Exception as e:
             logging.error(f"Failed to create {browser_type} driver: {str(e)}")
             raise
+
 
 class UAFScraper:
     def __init__(self):
