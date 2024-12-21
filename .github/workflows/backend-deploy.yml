@@ -26,17 +26,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Prepare deployment files
+      - name: Create deployment files
         working-directory: ./backend
         run: |
-          echo "gunicorn --bind=0.0.0.0:8000 --timeout=600 application:app" > startup.txt
-          
-          # Create deployment command file
-          echo "cd /home/site/wwwroot" > deploy.sh
-          echo "python -m pip install --upgrade pip" >> deploy.sh
-          echo "pip install -r requirements.txt" >> deploy.sh
-          echo "gunicorn --bind=0.0.0.0:8000 --timeout=600 application:app" >> deploy.sh
-          chmod +x deploy.sh
+          # Create web.config
+          echo '<?xml version="1.0" encoding="utf-8"?>' > web.config
+          echo '<configuration>' >> web.config
+          echo '  <system.webServer>' >> web.config
+          echo '    <handlers>' >> web.config
+          echo '      <add name="httpPlatformHandler" path="*" verb="*" modules="httpPlatformHandler" resourceType="Unspecified" />' >> web.config
+          echo '    </handlers>' >> web.config
+          echo '    <httpPlatform processPath="%HOME%\site\wwwroot\env\Scripts\python.exe"' >> web.config
+          echo '                  arguments="-m gunicorn application:app --bind 0.0.0.0:8000"' >> web.config
+          echo '                  stdoutLogEnabled="true"' >> web.config
+          echo '                  stdoutLogFile="%HOME%\LogFiles\python.log"' >> web.config
+          echo '                  startupTimeLimit="60">' >> web.config
+          echo '    </httpPlatform>' >> web.config
+          echo '  </system.webServer>' >> web.config
+          echo '</configuration>' >> web.config
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
@@ -44,7 +51,6 @@ jobs:
           app-name: 'uaf-cgpa-api'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ./backend
-          startup-command: 'python -m gunicorn application:app'
 
       - name: Azure Login
         uses: azure/login@v1
@@ -59,8 +65,7 @@ jobs:
               --name uaf-cgpa-api \
               --resource-group uaf-cgpa-rg \
               --linux-fx-version "PYTHON|3.9" \
-              --always-on true \
-              --startup-file "startup.txt"
+              --always-on true
 
             az webapp config appsettings set \
               --name uaf-cgpa-api \
@@ -69,7 +74,6 @@ jobs:
                 WEBSITES_PORT=8000 \
                 SCM_DO_BUILD_DURING_DEPLOYMENT=true \
                 ENABLE_ORYX_BUILD=true \
-                PORT=8000 \
                 FLASK_APP=application.py
 
             az webapp restart --name uaf-cgpa-api --resource-group uaf-cgpa-rg
