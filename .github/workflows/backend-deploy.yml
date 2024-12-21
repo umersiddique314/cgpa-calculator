@@ -61,22 +61,31 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
+            # Set Python version and configuration
             az webapp config set \
               --name uaf-cgpa-api \
               --resource-group uaf-cgpa-rg \
               --linux-fx-version "PYTHON|3.9" \
-              --startup-command "gunicorn --config gunicorn.conf.py application:app"
+              --always-on true
 
+            # Set the startup command as an app setting
             az webapp config appsettings set \
               --name uaf-cgpa-api \
               --resource-group uaf-cgpa-rg \
               --settings \
                 WEBSITES_PORT=8000 \
                 SCM_DO_BUILD_DURING_DEPLOYMENT=true \
-                ENABLE_ORYX_BUILD=true
+                ENABLE_ORYX_BUILD=true \
+                STARTUP_COMMAND="gunicorn --config gunicorn.conf.py application:app"
 
-            # Install Chrome in the web app
-            az webapp ssh -n uaf-cgpa-api -g uaf-cgpa-rg --command "curl -O https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && apt-get update && apt-get install -y ./google-chrome-stable_current_amd64.deb"
+            # Install Chrome using custom script
+            az webapp ssh \
+              --name uaf-cgpa-api \
+              --resource-group uaf-cgpa-rg \
+              --command "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+                        apt-get update && \
+                        apt-get install -y ./google-chrome-stable_current_amd64.deb && \
+                        rm google-chrome-stable_current_amd64.deb"
 
             # Restart the web app
             az webapp restart --name uaf-cgpa-api --resource-group uaf-cgpa-rg

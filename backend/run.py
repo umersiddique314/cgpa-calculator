@@ -9,4 +9,4 @@ if __name__ == "__main__":
         f" API will be available at: http://localhost:{Config.PORT}/api/result?reg_number=XXXX-ag-XXXX"
     )
     app.run(host=Config.HOST, port=Config.PORT, debug=Config.DEBUG)
-  
+   
