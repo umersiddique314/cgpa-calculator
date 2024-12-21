@@ -23,7 +23,7 @@ ENV NODE_ENV=production
 
 RUN npm run build
 
-FROM base AS runner
+FROM node:18-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
