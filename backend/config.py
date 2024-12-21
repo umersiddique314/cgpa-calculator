@@ -1,35 +1,33 @@
 import os
 from dotenv import load_dotenv
+import tempfile
+import platform
 
 load_dotenv()
 
-
 class Config:
+    # Basic settings
     DEBUG = os.getenv("DEBUG", "False").lower() == "true"
     HOST = os.getenv("HOST", "0.0.0.0")
     PORT = int(os.getenv("PORT", 5000))
-    CACHE_TIMEOUT = int(os.getenv("CACHE_TIMEOUT", 3600))
-    SCRAPER_TIMEOUT = int(os.getenv("SCRAPER_TIMEOUT", 20))
-    CHROME_TIMEOUT = int(os.getenv("CHROME_TIMEOUT", 10))
-    CHROME_BINARY_PATH = os.getenv("CHROME_BINARY_PATH", "/usr/bin/google-chrome")
-    CHROMEDRIVER_PATH = os.getenv("CHROMEDRIVER_PATH", "/usr/local/bin/chromedriver")
+    CHROME_TIMEOUT = int(os.getenv("CHROME_TIMEOUT", 30))
+
+    # Environment and paths
     IS_PRODUCTION = os.getenv("ENVIRONMENT", "development").lower() == "production"
-    BROWSER_TYPE = os.getenv(
-        "BROWSER_TYPE", "chrome"
-    ).lower()  # chrome, firefox, or edge
-    FIREFOX_BINARY_PATH = os.getenv("FIREFOX_BINARY_PATH", "/usr/bin/firefox")
-    EDGE_BINARY_PATH = os.getenv("EDGE_BINARY_PATH", "/usr/bin/microsoft-edge")
+    
+    # Windows-specific paths
+    if platform.system() == "Windows":
+        # Try multiple possible Chrome locations
+        CHROME_PATHS = [
+            os.path.join(os.environ.get("PROGRAMFILES", "C:\\Program Files"), "Google\\Chrome\\Application\\chrome.exe"),
+            os.path.join(os.environ.get("PROGRAMFILES(X86)", "C:\\Program Files (x86)"), "Google\\Chrome\\Application\\chrome.exe"),
+            os.path.join(os.environ.get("LOCALAPPDATA", ""), "Google\\Chrome\\Application\\chrome.exe")
+        ]
+        CHROME_BINARY_PATH = next((path for path in CHROME_PATHS if os.path.exists(path)), "")
+        DRIVER_CACHE_PATH = os.path.join(os.environ.get("LOCALAPPDATA", tempfile.gettempdir()), "ChromeDriver")
+    else:
+        CHROME_BINARY_PATH = "/usr/bin/google-chrome"
+        DRIVER_CACHE_PATH = "/tmp/webdriver"
 
-    # Browser Configuration
-    BROWSER_TYPE = os.getenv("BROWSER_TYPE", "chrome").lower()
-    DRIVER_CACHE_PATH = os.getenv("DRIVER_CACHE_PATH", "/tmp/webdriver")
-
-    # Browser Binary Paths
-    CHROME_BINARY_PATH = os.getenv("CHROME_BINARY_PATH", "/usr/bin/google-chrome")
-    FIREFOX_BINARY_PATH = os.getenv("FIREFOX_BINARY_PATH", "/usr/bin/firefox")
-    EDGE_BINARY_PATH = os.getenv("EDGE_BINARY_PATH", "/usr/bin/microsoft-edge")
-
-    # WebDriver Manager Settings
-    WDM_LOG_LEVEL = os.getenv("WDM_LOG_LEVEL", "INFO")
-    WDM_SSL_VERIFY = os.getenv("WDM_SSL_VERIFY", "1") == "1"
-    WDM_LOCAL = os.getenv("WDM_LOCAL", "1") == "1"
+    # Browser settings
+    BROWSER_TYPE = "chrome"
