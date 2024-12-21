@@ -26,31 +26,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Create deployment files
-        working-directory: ./backend
-        run: |
-          # Create startup file
-          echo "cd /home/site/wwwroot && gunicorn --bind=0.0.0.0:8000 --timeout=600 wsgi:app" > startup.sh
-          chmod +x startup.sh
-
-          # Create web.config
-          echo '<?xml version="1.0" encoding="utf-8"?>' > web.config
-          echo '<configuration>' >> web.config
-          echo '  <system.webServer>' >> web.config
-          echo '    <handlers>' >> web.config
-          echo '      <add name="PythonHandler" path="*" verb="*" modules="httpPlatformHandler" resourceType="Unspecified"/>' >> web.config
-          echo '    </handlers>' >> web.config
-          echo '    <httpPlatform processPath="%HOME%\site\wwwroot\env\Scripts\python.exe"' >> web.config
-          echo '                  arguments="-m gunicorn wsgi:app --bind 0.0.0.0:8000"' >> web.config
-          echo '                  stdoutLogEnabled="true"' >> web.config
-          echo '                  stdoutLogFile="%HOME%\LogFiles\python.log">' >> web.config
-          echo '      <environmentVariables>' >> web.config
-          echo '        <environmentVariable name="PYTHONPATH" value="%HOME%\site\wwwroot"/>' >> web.config
-          echo '      </environmentVariables>' >> web.config
-          echo '    </httpPlatform>' >> web.config
-          echo '  </system.webServer>' >> web.config
-          echo '</configuration>' >> web.config
-
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
@@ -77,13 +52,12 @@ jobs:
               --name uaf-cgpa-api \
               --resource-group uaf-cgpa-rg \
               --settings \
-                WEBSITES_PORT=8000 \
                 SCM_DO_BUILD_DURING_DEPLOYMENT=true \
                 ENABLE_ORYX_BUILD=true \
-                PYTHON_PATH="/home/site/wwwroot" \
-                PYTHONPATH="/home/site/wwwroot" \
+                FLASK_APP="wsgi:app" \
+                WEBSITES_PORT=8000 \
                 PORT=8000 \
-                FLASK_APP="wsgi.py"
+                FLASK_ENV="production"
 
             az webapp restart --name uaf-cgpa-api --resource-group uaf-cgpa-rg
 
