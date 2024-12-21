@@ -34,22 +34,16 @@ jobs:
           echo "PORT=8000" >> .env
           echo "ENVIRONMENT=production" >> .env
           echo "BROWSER_TYPE=chrome" >> .env
-          echo "CHROME_BINARY_PATH=/usr/bin/google-chrome" >> .env
-          echo "DRIVER_CACHE_PATH=/tmp/webdriver" >> .env
-          echo "WDM_LOG_LEVEL=20" >> .env
-          echo "WDM_LOCAL=1" >> .env
-          echo "WDM_SSL_VERIFY=1" >> .env
           echo "CHROME_TIMEOUT=30" >> .env
 
-      - name: Create startup.sh
+      - name: Create gunicorn.conf.py
         working-directory: ./backend
         run: |
-          echo '#!/bin/bash' > startup.sh
-          echo 'cd /home/site/wwwroot' >> startup.sh
-          echo 'curl -O https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb' >> startup.sh
-          echo 'apt-get update && apt-get install -y ./google-chrome-stable_current_amd64.deb' >> startup.sh
-          echo 'gunicorn --bind=0.0.0.0:8000 --timeout 600 application:app' >> startup.sh
-          chmod +x startup.sh
+          echo "bind = '0.0.0.0:8000'" > gunicorn.conf.py
+          echo "workers = 4" >> gunicorn.conf.py
+          echo "timeout = 600" >> gunicorn.conf.py
+          echo "accesslog = '-'" >> gunicorn.conf.py
+          echo "errorlog = '-'" >> gunicorn.conf.py
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
@@ -57,7 +51,6 @@ jobs:
           app-name: 'uaf-cgpa-api'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ./backend
-          startup-command: 'sh /home/site/wwwroot/startup.sh'
 
       - name: Azure Login
         uses: azure/login@v1
@@ -71,21 +64,20 @@ jobs:
             az webapp config set \
               --name uaf-cgpa-api \
               --resource-group uaf-cgpa-rg \
-              --linux-fx-version "PYTHON|3.9"
+              --linux-fx-version "PYTHON|3.9" \
+              --startup-command "gunicorn --config gunicorn.conf.py application:app"
 
             az webapp config appsettings set \
               --name uaf-cgpa-api \
               --resource-group uaf-cgpa-rg \
               --settings \
                 WEBSITES_PORT=8000 \
-                BROWSER_TYPE=chrome \
-                CHROME_BINARY_PATH=/usr/bin/google-chrome \
-                DRIVER_CACHE_PATH=/tmp/webdriver \
-                WDM_LOG_LEVEL=20 \
-                CHROME_TIMEOUT=30 \
                 SCM_DO_BUILD_DURING_DEPLOYMENT=true \
                 ENABLE_ORYX_BUILD=true
 
-            az webapp stop --name uaf-cgpa-api --resource-group uaf-cgpa-rg
-            az webapp start --name uaf-cgpa-api --resource-group uaf-cgpa-rg
+            # Install Chrome in the web app
+            az webapp ssh -n uaf-cgpa-api -g uaf-cgpa-rg --command "curl -O https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && apt-get update && apt-get install -y ./google-chrome-stable_current_amd64.deb"
+
+            # Restart the web app
+            az webapp restart --name uaf-cgpa-api --resource-group uaf-cgpa-rg
 
