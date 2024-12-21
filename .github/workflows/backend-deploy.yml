@@ -57,17 +57,16 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az webapp config set \
-              --name uaf-cgpa-api \
-              --resource-group uaf-cgpa-rg \
-              --linux-fx-version "PYTHON|3.9"
+            # Install Google Chrome
+            wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O /tmp/google-chrome.deb
+            apt-get update
+            apt-get install -y /tmp/google-chrome.deb || apt-get install -f -y
 
+            # Set environment variables (if not already set)
             az webapp config appsettings set \
               --name uaf-cgpa-api \
               --resource-group uaf-cgpa-rg \
               --settings \
-                SCM_DO_BUILD_DURING_DEPLOYMENT=true \
-                ENABLE_ORYX_BUILD=true \
                 BROWSER_TYPE=chrome \
                 WEBSITES_PORT=8000 \
                 CHROME_BINARY_PATH=/usr/bin/google-chrome \
@@ -75,14 +74,6 @@ jobs:
                 WDM_LOG_LEVEL=20 \
                 CHROME_TIMEOUT=30
 
-      - name: Upload Startup Script
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'uaf-cgpa-api'
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: ./backend
-          slot-name: 'production'
-          startup-command: |
-            bash -c "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O /tmp/google-chrome.deb && \
-                     dpkg -i /tmp/google-chrome.deb || apt-get install -f -y && \
-                     gunicorn --bind=0.0.0.0:8000 --timeout 600 --workers 2 run:app"
+            # Restart the web app to apply changes
+            az webapp restart --name uaf-cgpa-api --resource-group uaf-cgpa-rg
+
