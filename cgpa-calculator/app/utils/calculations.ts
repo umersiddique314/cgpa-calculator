@@ -32,10 +32,17 @@ export const calculateGradePoints = (course: CourseRow) => {
   if (totalMarks >= marksForMaxGP) {
     return maxGradePoints
   } else if (totalMarks >= marksForMinGP) {
-    const marksRange = marksForMaxGP - marksForMinGP
-    const gpRange = maxGradePoints - minGradePoints
-    const marksAboveMin = totalMarks - marksForMinGP
-    const gradePoints = minGradePoints + (marksAboveMin * gpRange) / marksRange
+    const totalGap = marksForMaxGP - totalMarks
+    let totalDeduction = 0
+    
+    for (let i = 0; i < totalGap; i++) {
+      const position = i % 3;
+      if (position === 0) totalDeduction += 0.33;    
+      else if (position === 1) totalDeduction += 0.34; 
+      else totalDeduction += 0.33;                 
+    }
+
+    const gradePoints = maxGradePoints - totalDeduction
     return gradePoints
   } else {
     return minGradePoints

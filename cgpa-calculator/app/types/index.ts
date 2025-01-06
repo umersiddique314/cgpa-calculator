@@ -8,14 +8,14 @@ export interface ResultData {
     rows: CourseRow[];
   };
 }
-   
+
 export interface CourseRow {
   Assignment: string;
   "Course Code": string;
   "Credit Hours": string;
   Final: string;
   Grade: string;
-  Mid: string; 
+  Mid: string;
   Practical: string;
   Semester: string;
   Sr: string;

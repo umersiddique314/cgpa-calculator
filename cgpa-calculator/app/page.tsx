@@ -28,7 +28,7 @@ export default function Home() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://uaf-cgpa-api.azurewebsites.net/api";
-         const response = await fetch(`${apiUrl}/result?reg_number=${regNumber}`)
+      const response = await fetch(`${apiUrl}/result?reg_number=${regNumber}`)
       const data = await response.json()
 
       if (data.status === 'success') {
@@ -122,7 +122,7 @@ export default function Home() {
                          shadow p-4 text-white">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Overall CGPA</h2>
-                <p className="text-3xl font-bold">{calculateCGPA(includedCourses).toFixed(2)}</p>
+                <p className="text-3xl font-bold">{calculateCGPA(includedCourses).toFixed(4)}</p>
               </div>
             </div>
           </div>
