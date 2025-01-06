@@ -39,7 +39,7 @@ export default function Home() {
     }, 300)
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://uaf-cgpa-api.azurewebsites.net/api";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.uafcalculator.live/api";
       const response = await fetch(`${apiUrl}/result?reg_number=${regNumber}`)
       const data = await response.json()
 
