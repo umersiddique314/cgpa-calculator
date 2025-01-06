@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { AlertCircle, BookOpen } from 'lucide-react'
+import { AlertCircle, BookOpen, ChevronDown, ChevronUp } from 'lucide-react'
 import { Header } from './components/Header'
 import { SearchForm } from './components/SearchForm'
 import { SemesterCard } from './components/SemesterCard'
 import { ResultData, CourseRow } from './types'
 import { calculateCGPA, groupBySemester, calculateSemesterCGPA, caclilateOverallCGPA, resetOverallCGPA } from './utils/calculations'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function Home() {
   const [regNumber, setRegNumber] = useState('')
@@ -15,6 +16,17 @@ export default function Home() {
   const [error, setError] = useState('')
   const [progress, setProgress] = useState(0)
   const [includedCourses, setIncludedCourses] = useState<CourseRow[]>([])
+  const [expandedSemesters, setExpandedSemesters] = useState<string[]>([])
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,6 +45,7 @@ export default function Home() {
 
       if (data.status === 'success') {
         setResult(data.data)
+        setExpandedSemesters([])
       } else {
         setError('No results found')
       }
@@ -56,6 +69,17 @@ export default function Home() {
     setIncludedCourses(prevCourses =>
       prevCourses.filter(course => course["Course Code"] !== courseCode)
     )
+  }
+
+  const toggleSemesterExpansion = (semester: string) => {
+    // Only handle mobile toggle, desktop is always expanded
+    if (windowWidth < 1024) {
+      setExpandedSemesters(prev => 
+        prev.includes(semester)
+          ? prev.filter(s => s !== semester)
+          : [...prev, semester]
+      )
+    }
   }
 
   const jsonLd = {
@@ -86,7 +110,7 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <Header />
         <SearchForm
           regNumber={regNumber}
@@ -97,63 +121,84 @@ export default function Home() {
 
         {loading && (
           <div className="max-w-xl mx-auto mb-8">
-            <div className="w-full bg-gray-200 rounded-full h-3">
-              <div
-                className="bg-blue-600 h-3 rounded-full transition-all duration-300 
-                         shadow-lg shadow-blue-200"
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <motion.div
+                className="bg-blue-600 h-2 rounded-full"
                 style={{ width: `${progress}%` }}
-              ></div>
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.5 }}
+              />
             </div>
           </div>
         )}
 
-        {error && (
-          <div className="max-w-xl mx-auto p-6 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center 
-                       gap-4 text-red-700 dark:text-red-400 animate-fade-in border border-red-100 dark:border-red-800 
-                       shadow-lg shadow-red-100/50 dark:shadow-red-900/50">
-            <AlertCircle className="w-6 h-6 flex-shrink-0" />
-            <p className="text-lg">{error}</p>
-          </div>
-        )}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-xl mx-auto p-4 bg-red-50 dark:bg-red-900/20 rounded-xl flex items-center 
+                         gap-3 text-red-700 dark:text-red-400 mb-8 border border-red-100 dark:border-red-800 
+                         shadow-lg shadow-red-100/50 dark:shadow-red-900/50"
+            >
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <p>{error}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {result && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-4">
-                <div className="p-2 bg-blue-50 dark:bg-blue-900/50 rounded-lg">
-                  <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                    {result.student_info["Student Full Name"]}
-                  </h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{result.student_info["Registration #"]}</p>
+        <AnimatePresence>
+          {result && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="space-y-6"
+            >
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-full">
+                      <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                        {result.student_info["Student Full Name"]}
+                      </h2>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{result.student_info["Registration #"]}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Total CGPA</p>
+                    <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                      {caclilateOverallCGPA(includedCourses).toFixed(4)}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(groupBySemester(includedCourses)).map(
-                ([semester, courses]) => (
-                  <SemesterCard
-                    key={semester}
-                    semester={semester}
-                    courses={courses}
-                    semesterCGPA={calculateSemesterCGPA(courses)}
-                    onRemoveCourse={handleRemoveCourse}
-                  />
-                )
-              )}
-            </div>
 
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 rounded-lg 
-                         shadow p-4 text-white">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Overall CGPA</h2>
-                <p className="text-3xl font-bold">{caclilateOverallCGPA(includedCourses).toFixed(4)}</p>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {Object.entries(groupBySemester(includedCourses)).map(
+                  ([semester, courses]) => (
+                    <SemesterCard
+                      key={semester}
+                      semester={semester}
+                      courses={courses}
+                      semesterCGPA={calculateSemesterCGPA(courses)}
+                      onRemoveCourse={handleRemoveCourse}
+                      isExpanded={expandedSemesters.includes(semester)}
+                      onToggleExpand={() => toggleSemesterExpansion(semester)}
+                      isMobile={windowWidth < 1024}
+                    />
+                  )
+                )}
               </div>
-            </div>
-          </div>
-        )}
+
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
