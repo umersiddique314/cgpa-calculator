@@ -2,7 +2,7 @@
 module.exports = {
   siteUrl: process.env.SITE_URL || 'https://uafcalculator.live',
   generateRobotsTxt: true,
-  generateIndexSitemap: false,
+  generateIndexSitemap: true,
   sitemapSize: 5000,
   robotsTxtOptions: {
     policies: [
@@ -12,7 +12,6 @@ module.exports = {
       }
     ],
     additionalSitemaps: [
-      'https://uafcalculator.live/sitemap.xml',
       'https://uafcalculator.live/server-sitemap.xml'
     ],
   },
