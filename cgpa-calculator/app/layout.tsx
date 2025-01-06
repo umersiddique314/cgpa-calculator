@@ -17,11 +17,25 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "UAF CGPA Calculator",
+    default: "UAF CGPA Calculator | Calculate Your University GPA Easily",
     template: "%s | UAF CGPA Calculator"
   },
-  description: "Calculate your CGPA for University of Agriculture Faisalabad (UAF) with our easy-to-use calculator. Get accurate results instantly.",
-  keywords: ["UAF", "CGPA Calculator", "University of Agriculture Faisalabad", "GPA Calculator", "Academic Calculator"],
+  description: "Free UAF CGPA Calculator for University of Agriculture Faisalabad students. Calculate semester GPA and CGPA accurately with our easy-to-use tool. Get instant results for all departments.",
+  keywords: [
+    "UAF CGPA Calculator",
+    "Uaf",
+    "CGPA Calculator",
+    "GPA Calculator UAF",
+    "UAF GPA Calculator",
+    "UAF CGPA System",
+    "University of Agriculture Faisalabad",
+    "GPA Calculator",
+    "UAF GPA System",
+    "Pakistan University Calculator",
+    "Student CGPA Tool",
+    "Academic Calculator UAF",
+    "Semester GPA Calculator"
+  ],
   authors: [{ name: "Your Name" }],
   creator: "Your Name",
   publisher: "Your Name",
@@ -29,18 +43,28 @@ export const metadata: Metadata = {
     email: false,
     telephone: false,
   },
-  metadataBase: new URL('https://your-domain.com'),
+  metadataBase: new URL('https://uafcalculator.live'),
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    title: 'UAF CGPA Calculator',
-    description: 'Calculate your CGPA for University of Agriculture Faisalabad (UAF) with our easy-to-use calculator.',
+    url: 'https://uafcalculator.live',
+    title: 'UAF CGPA Calculator | Calculate Your University GPA Easily',
+    description: 'Free UAF CGPA Calculator for University of Agriculture Faisalabad students. Calculate semester GPA and CGPA accurately with our easy-to-use tool.',
     siteName: 'UAF CGPA Calculator',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'UAF CGPA Calculator Preview'
+      }
+    ]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'UAF CGPA Calculator',
-    description: 'Calculate your CGPA for University of Agriculture Faisalabad (UAF) with our easy-to-use calculator.',
+    title: 'UAF CGPA Calculator | Calculate Your University GPA Easily',
+    description: 'Free UAF CGPA Calculator for University of Agriculture Faisalabad students. Calculate semester GPA and CGPA accurately.',
+    images: ['/twitter-image.png']
   },
   robots: {
     index: true,
