@@ -6,7 +6,7 @@ import { Header } from './components/Header'
 import { SearchForm } from './components/SearchForm'
 import { SemesterCard } from './components/SemesterCard'
 import { ResultData, CourseRow } from './types'
-import { calculateCGPA, groupBySemester, calculateSemesterCGPA } from './utils/calculations'
+import { calculateCGPA, groupBySemester, calculateSemesterCGPA, caclilateOverallCGPA } from './utils/calculations'
 
 export default function Home() {
   const [regNumber, setRegNumber] = useState('')
@@ -122,7 +122,7 @@ export default function Home() {
                          shadow p-4 text-white">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Overall CGPA</h2>
-                <p className="text-3xl font-bold">{calculateCGPA(includedCourses).toFixed(4)}</p>
+                <p className="text-3xl font-bold">{caclilateOverallCGPA(includedCourses).toFixed(4)}</p>
               </div>
             </div>
           </div>
