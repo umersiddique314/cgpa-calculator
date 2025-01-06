@@ -8,7 +8,7 @@ import { Toaster } from 'react-hot-toast';
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-poppins",
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -87,7 +87,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${poppins.variable} min-h-screen antialiased`}>
+      <body className={`${poppins.className} min-h-screen antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
