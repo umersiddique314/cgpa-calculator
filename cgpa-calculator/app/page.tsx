@@ -6,7 +6,7 @@ import { Header } from './components/Header'
 import { SearchForm } from './components/SearchForm'
 import { SemesterCard } from './components/SemesterCard'
 import { ResultData, CourseRow } from './types'
-import { calculateCGPA, groupBySemester, calculateSemesterCGPA, caclilateOverallCGPA } from './utils/calculations'
+import { calculateCGPA, groupBySemester, calculateSemesterCGPA, caclilateOverallCGPA, resetOverallCGPA } from './utils/calculations'
 
 export default function Home() {
   const [regNumber, setRegNumber] = useState('')
@@ -47,6 +47,7 @@ export default function Home() {
 
   useEffect(() => {
     if (result) {
+      resetOverallCGPA()
       setIncludedCourses(result.result_table.rows)
     }
   }, [result])
@@ -57,8 +58,34 @@ export default function Home() {
     )
   }
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'UAF CGPA Calculator',
+    description: 'Calculate your CGPA for University of Agriculture Faisalabad (UAF) with our easy-to-use calculator.',
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'Any',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    author: {
+      '@type': 'Organization',
+      name: 'UAF CGPA Calculator',
+    },
+    audience: {
+      '@type': 'EducationalAudience',
+      educationalRole: 'student'
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <Header />
         <SearchForm
@@ -81,9 +108,9 @@ export default function Home() {
         )}
 
         {error && (
-          <div className="max-w-xl mx-auto p-6 bg-red-50 rounded-2xl flex items-center 
-                       gap-4 text-red-700 animate-fade-in border border-red-100 
-                       shadow-lg shadow-red-100/50">
+          <div className="max-w-xl mx-auto p-6 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center 
+                       gap-4 text-red-700 dark:text-red-400 animate-fade-in border border-red-100 dark:border-red-800 
+                       shadow-lg shadow-red-100/50 dark:shadow-red-900/50">
             <AlertCircle className="w-6 h-6 flex-shrink-0" />
             <p className="text-lg">{error}</p>
           </div>
@@ -91,16 +118,16 @@ export default function Home() {
 
         {result && (
           <div className="space-y-6 animate-fade-in">
-            <div className="bg-white rounded-lg shadow p-4 border border-gray-100">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-100 dark:border-gray-700">
               <div className="flex items-center gap-4">
-                <div className="p-2 bg-blue-50 rounded-lg">
-                  <BookOpen className="w-6 h-6 text-blue-600" />
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/50 rounded-lg">
+                  <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     {result.student_info["Student Full Name"]}
                   </h2>
-                  <p className="text-sm text-gray-600">{result.student_info["Registration #"]}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{result.student_info["Registration #"]}</p>
                 </div>
               </div>
             </div>
@@ -118,7 +145,7 @@ export default function Home() {
               )}
             </div>
 
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg 
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 rounded-lg 
                          shadow p-4 text-white">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Overall CGPA</h2>

@@ -84,6 +84,11 @@ export const caclilateOverallCGPA = (courses: CourseRow[]) => {
   return (overallCGPA / totalSemesters)
 }
 
+export const resetOverallCGPA = () => {
+  overallCGPA = 0;
+  totalSemesters = 0;
+}
+
 function getSemesterType(semester: string): 'Spring' | 'Winter' {
   return semester.toLowerCase().includes('spring') ? 'Spring' : 'Winter';
 }
