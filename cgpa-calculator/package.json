@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "rimraf .next",
     "build": "next build",
     "postbuild": "next-sitemap",
-    "start": "node server.js",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
