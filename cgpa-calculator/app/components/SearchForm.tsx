@@ -1,6 +1,7 @@
 import { Search } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'react-hot-toast'
+import { useState } from 'react'
 
 interface SearchFormProps {
   regNumber: string;
@@ -10,6 +11,8 @@ interface SearchFormProps {
 }
 
 export const SearchForm = ({ regNumber, loading, onSubmit, onRegNumberChange }: SearchFormProps) => {
+  const [privacyConsent, setPrivacyConsent] = useState(false);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase()
     onRegNumberChange(value)
@@ -17,6 +20,10 @@ export const SearchForm = ({ regNumber, loading, onSubmit, onRegNumberChange }: 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!privacyConsent) {
+      toast.error('Please accept the privacy policy to continue');
+      return;
+    }
     const regNumberPattern = /^\d{4}-ag-\d{1,6}$/i
     if (!regNumberPattern.test(regNumber)) {
       toast.error('Format: YYYY-ag-XXXXXX (e.g., 2022-ag-7693)', {
@@ -59,6 +66,21 @@ export const SearchForm = ({ regNumber, loading, onSubmit, onRegNumberChange }: 
         >
           {loading ? 'Searching...' : 'Search'}
         </button>
+      </div>
+      <div className="mt-4 flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="privacy-consent"
+          checked={privacyConsent}
+          onChange={(e) => setPrivacyConsent(e.target.checked)}
+          className="rounded border-gray-300 dark:border-gray-700 text-blue-600"
+        />
+        <label htmlFor="privacy-consent" className="text-sm text-gray-600 dark:text-gray-400">
+          I agree to the{' '}
+          <a href="/privacy" className="text-blue-600 hover:underline">
+            privacy policy
+          </a>
+        </label>
       </div>
     </motion.form>
   )

@@ -9,6 +9,7 @@ import { ResultData, CourseRow } from './types'
 import { calculateCGPA, groupBySemester, calculateSemesterCGPA, caclilateOverallCGPA, resetOverallCGPA } from './utils/calculations'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-hot-toast'
+import { Footer } from './components/Footer'
 
 export default function Home() {
   const [regNumber, setRegNumber] = useState('')
@@ -216,6 +217,7 @@ export default function Home() {
           )}
         </AnimatePresence>
       </div>
+      <Footer />
     </div>
   )
 }
