@@ -77,9 +77,15 @@ export default function Home() {
   }, [result])
 
   const handleRemoveCourse = (courseCode: string) => {
-    setIncludedCourses(prevCourses =>
-      prevCourses.filter(course => course["Course Code"] !== courseCode)
-    )
+    setIncludedCourses(prevCourses => {
+      const newCourses = prevCourses.filter(course => course["Course Code"] !== courseCode);
+      resetOverallCGPA();
+      const groupedSemesters = groupBySemester(newCourses);
+      Object.values(groupedSemesters).forEach(semesterCourses => {
+        calculateSemesterCGPA(semesterCourses);
+      });
+      return newCourses;
+    });
   }
 
   const toggleSemesterExpansion = (semester: string) => {
