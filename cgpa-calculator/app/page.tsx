@@ -10,6 +10,7 @@ import { calculateCGPA, groupBySemester, calculateSemesterCGPA, caclilateOverall
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-hot-toast'
 import { Footer } from './components/Footer'
+import { NextSeo } from 'next-seo';
 
 export default function Home() {
   const [regNumber, setRegNumber] = useState('')
@@ -122,102 +123,121 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    <>
+      <NextSeo
+        title="UAF CGPA Calculator | Calculate Your University GPA Easily"
+        description="Free CGPA Calculator for University of Agriculture Faisalabad students. Calculate your semester GPA and CGPA instantly with our easy-to-use tool."
+        canonical="https://uafcalculator.live"
+        openGraph={{
+          title: 'UAF CGPA Calculator | Calculate Your University GPA Easily',
+          description: 'Free CGPA Calculator for University of Agriculture Faisalabad students.',
+          images: [
+            {
+              url: 'https://uafcalculator.live/og-image.png',
+              width: 1200,
+              height: 630,
+              alt: 'UAF CGPA Calculator',
+            },
+          ],
+        }}
       />
-      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <Header />
-        <SearchForm
-          regNumber={regNumber}
-          loading={loading}
-          onSubmit={handleSubmit}
-          onRegNumberChange={setRegNumber}
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+          <Header />
+          <SearchForm
+            regNumber={regNumber}
+            loading={loading}
+            onSubmit={handleSubmit}
+            onRegNumberChange={setRegNumber}
+          />
 
-        {loading && (
-          <div className="max-w-xl mx-auto mb-8">
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <motion.div
-                className="bg-blue-600 h-2 rounded-full"
-                style={{ width: `${progress}%` }}
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.5 }}
-              />
+          {loading && (
+            <div className="max-w-xl mx-auto mb-8">
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <motion.div
+                  className="bg-blue-600 h-2 rounded-full"
+                  style={{ width: `${progress}%` }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
             </div>
-          </div>
-        )}
-
-        <AnimatePresence>
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="max-w-xl mx-auto p-4 bg-red-50 dark:bg-red-900/20 rounded-xl flex items-center 
-                         gap-3 text-red-700 dark:text-red-400 mb-8 border border-red-100 dark:border-red-800 
-                         shadow-lg shadow-red-100/50 dark:shadow-red-900/50"
-            >
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <p>{error}</p>
-            </motion.div>
           )}
-        </AnimatePresence>
 
-        <AnimatePresence>
-          {result && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="space-y-6"
-            >
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-full">
-                      <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="max-w-xl mx-auto p-4 bg-red-50 dark:bg-red-900/20 rounded-xl flex items-center 
+                           gap-3 text-red-700 dark:text-red-400 mb-8 border border-red-100 dark:border-red-800 
+                           shadow-lg shadow-red-100/50 dark:shadow-red-900/50"
+              >
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                <p>{error}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {result && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                className="space-y-6"
+              >
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-full">
+                        <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                          {result.student_info["Student Full Name"]}
+                        </h2>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{result.student_info["Registration #"]}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                        {result.student_info["Student Full Name"]}
-                      </h2>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{result.student_info["Registration #"]}</p>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Total CGPA</p>
+                      <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                        {caclilateOverallCGPA(includedCourses).toFixed(4)}
+                      </p>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Total CGPA</p>
-                    <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                      {caclilateOverallCGPA(includedCourses).toFixed(4)}
-                    </p>
                   </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {Object.entries(groupBySemester(includedCourses)).map(
-                  ([semester, courses]) => (
-                    <SemesterCard
-                      key={semester}
-                      semester={semester}
-                      courses={courses}
-                      semesterCGPA={calculateSemesterCGPA(courses)}
-                      onRemoveCourse={handleRemoveCourse}
-                      isExpanded={expandedSemesters.includes(semester)}
-                      onToggleExpand={() => toggleSemesterExpansion(semester)}
-                      isMobile={windowWidth < 1024}
-                    />
-                  )
-                )}
-              </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {Object.entries(groupBySemester(includedCourses)).map(
+                    ([semester, courses]) => (
+                      <SemesterCard
+                        key={semester}
+                        semester={semester}
+                        courses={courses}
+                        semesterCGPA={calculateSemesterCGPA(courses)}
+                        onRemoveCourse={handleRemoveCourse}
+                        isExpanded={expandedSemesters.includes(semester)}
+                        onToggleExpand={() => toggleSemesterExpansion(semester)}
+                        isMobile={windowWidth < 1024}
+                      />
+                    )
+                  )}
+                </div>
 
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </>
   )
 }
