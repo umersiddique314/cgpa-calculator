@@ -15,10 +15,10 @@ export interface SemesterCardProps {
   isMobile: boolean;
 }
 
-export const SemesterCard = ({ 
-  semester, 
-  courses, 
-  semesterCGPA, 
+export const SemesterCard = ({
+  semester,
+  courses,
+  semesterCGPA,
   onRemoveCourse,
   isExpanded,
   onToggleExpand,
@@ -38,8 +38,8 @@ export const SemesterCard = ({
       </thead>
       <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
         {courses.map((course, index) => (
-          <tr 
-            key={course["Course Code"]} 
+          <tr
+            key={course["Course Code"]}
             className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
           >
             <td className="px-3 py-2 whitespace-nowrap">{course["Course Code"]}</td>
@@ -70,7 +70,7 @@ export const SemesterCard = ({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
       <div className="p-4">
-        <div 
+        <div
           className={`flex items-center justify-between mb-4 ${isMobile ? 'cursor-pointer' : ''}`}
           onClick={isMobile ? onToggleExpand : undefined}
         >
@@ -91,7 +91,7 @@ export const SemesterCard = ({
             )}
           </div>
         </div>
-        
+
         {isMobile ? (
           <AnimatePresence>
             {isExpanded && (

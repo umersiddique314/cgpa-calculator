@@ -8,6 +8,7 @@ import { SemesterCard } from './components/SemesterCard'
 import { ResultData, CourseRow } from './types'
 import { calculateCGPA, groupBySemester, calculateSemesterCGPA, caclilateOverallCGPA, resetOverallCGPA } from './utils/calculations'
 import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'react-hot-toast'
 
 export default function Home() {
   const [regNumber, setRegNumber] = useState('')
@@ -30,6 +31,13 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    const regNumberPattern = /^\d{4}-ag-\d{1,6}$/i;
+    if (!regNumberPattern.test(regNumber)) {
+      toast.error('Please enter a valid registration number (e.g., 2022-ag-7693)');
+      return;
+    }
+
     setLoading(true)
     setError('')
     setProgress(0)
@@ -46,10 +54,13 @@ export default function Home() {
       if (data.status === 'success') {
         setResult(data.data)
         setExpandedSemesters([])
+        toast.success('Results loaded successfully!')
       } else {
+        toast.error('No results found')
         setError('No results found')
       }
     } catch (err) {
+      toast.error('Failed to fetch results')
       setError('Failed to fetch results')
     } finally {
       clearInterval(progressInterval)
@@ -72,9 +83,8 @@ export default function Home() {
   }
 
   const toggleSemesterExpansion = (semester: string) => {
-    // Only handle mobile toggle, desktop is always expanded
     if (windowWidth < 1024) {
-      setExpandedSemesters(prev => 
+      setExpandedSemesters(prev =>
         prev.includes(semester)
           ? prev.filter(s => s !== semester)
           : [...prev, semester]

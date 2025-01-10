@@ -11,7 +11,18 @@ export const calculateGradePoints = (course: CourseRow) => {
   let marksForMaxGP = 0
   let marksForMinGP = 0
 
-  if (creditHours === 3) {
+
+  if (creditHours === 5) {
+    maxGradePoints = 20
+    minGradePoints = 5
+    marksForMaxGP = 80
+    marksForMinGP = 40
+  } else if (creditHours === 4) {
+    maxGradePoints = 16
+    minGradePoints = 4
+    marksForMaxGP = 60
+    marksForMinGP = 32
+  } else if (creditHours === 3) {
     maxGradePoints = 12
     minGradePoints = 3
     marksForMaxGP = 48
@@ -29,22 +40,27 @@ export const calculateGradePoints = (course: CourseRow) => {
   } else {
     return 0
   }
-
   if (totalMarks >= marksForMaxGP) {
     return maxGradePoints
   } else if (totalMarks >= marksForMinGP) {
     const totalGap = marksForMaxGP - totalMarks
+    let dGradeMarks = marksForMinGP + creditHours * 2
     let totalDeduction = 0
-
-    for (let i = 0; i < totalGap; i++) {
-      const position = i % 3;
-      if (position === 0) totalDeduction += 0.33;
-      else if (position === 1) totalDeduction += 0.34;
-      else totalDeduction += 0.33;
+    if (totalMarks <= dGradeMarks) {
+      const gap = totalMarks - marksForMinGP;
+      const grades = minGradePoints + (gap * 0.5);
+      return grades
+    } else {
+      for (let i = 0; i < totalGap; i++) {
+        const position = i % 3;
+        if (position === 0) totalDeduction += 0.33;
+        else if (position === 1) totalDeduction += 0.34;
+        else totalDeduction += 0.33;
+      }
+      const gradePoints = maxGradePoints - totalDeduction
+      return gradePoints
     }
 
-    const gradePoints = maxGradePoints - totalDeduction
-    return gradePoints
   } else {
     return minGradePoints
   }
