@@ -10,6 +10,7 @@ import { calculateCGPA, groupBySemester, calculateSemesterCGPA, caclilateOverall
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-hot-toast'
 import { Footer } from './components/Footer'
+import Head from 'next/head'
 
 export default function Home() {
   const [regNumber, setRegNumber] = useState('')
@@ -123,6 +124,21 @@ export default function Home() {
 
   return (
     <>
+      <Head>
+        <link rel="canonical" href="https://uafcalculator.live" />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:url" content="https://uafcalculator.live" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet="utf-8" />
+        <title>UAF CGPA Calculator - University of Agriculture Faisalabad</title>
+        <meta name="description" content="Calculate your CGPA for University of Agriculture Faisalabad (UAF) instantly with our official calculator. Accurate results following UAF's grading system." />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="UAF CGPA Calculator" />
+        <meta property="og:title" content="UAF CGPA Calculator - University of Agriculture Faisalabad" />
+        <meta property="og:description" content="Calculate your CGPA for University of Agriculture Faisalabad (UAF) instantly with our official calculator." />
+        <link rel="alternate" hrefLang="en" href="https://uafcalculator.live" />
+        <link rel="canonical" href="https://www.uafcalculator.live" />
+      </Head>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <script
           type="application/ld+json"

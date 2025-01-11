@@ -1,0 +1,20 @@
+
+{
+  "redirects": [
+    {
+      "source": "http://uafcalculator.live/:path*",
+      "destination": "https://uafcalculator.live/:path*",
+      "permanent": true
+    },
+    {
+      "source": "http://www.uafcalculator.live/:path*",
+      "destination": "https://uafcalculator.live/:path*",
+      "permanent": true
+    },
+    {
+      "source": "https://www.uafcalculator.live/:path*",
+      "destination": "https://uafcalculator.live/:path*",
+      "permanent": true
+    }
+  ]
+}
