@@ -1,18 +1,24 @@
-
 {
   "redirects": [
     {
-      "source": "http://uafcalculator.live/:path*",
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "uafcalculator.live"
+        }
+      ],
       "destination": "https://uafcalculator.live/:path*",
       "permanent": true
     },
     {
-      "source": "http://www.uafcalculator.live/:path*",
-      "destination": "https://uafcalculator.live/:path*",
-      "permanent": true
-    },
-    {
-      "source": "https://www.uafcalculator.live/:path*",
+      "source": "/:path*", 
+      "has": [
+        {
+          "type": "host",
+          "value": "www.uafcalculator.live"
+        }
+      ],
       "destination": "https://uafcalculator.live/:path*",
       "permanent": true
     }
