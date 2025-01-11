@@ -1,9 +1,8 @@
-import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "./components/Navbar";
-import { metadata } from './metadata';
 import { Providers } from './providers/Providers';
+import { metadata } from './metadata';
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -11,7 +10,7 @@ const poppins = Poppins({
   display: 'swap',
 });
 
-export { metadata };
+export const generateMetadata = () => metadata;
 
 export default function RootLayout({
   children,

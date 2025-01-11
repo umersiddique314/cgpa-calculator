@@ -3,7 +3,6 @@
 import { DefaultSeo } from 'next-seo'
 import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from 'react-hot-toast'
-import { ClientProviders } from './ClientProviders'
 
 const defaultSEO = {
   openGraph: {
@@ -33,6 +32,17 @@ const defaultSEO = {
   ],
 }
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  return <ClientProviders>{children}</ClientProviders>
+export function ClientProviders({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <DefaultSeo {...defaultSEO} />
+      {children}
+      <Toaster position="top-center" />
+    </ThemeProvider>
+  )
 }
