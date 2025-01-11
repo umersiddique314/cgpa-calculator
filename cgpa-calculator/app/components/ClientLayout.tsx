@@ -3,7 +3,7 @@
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from 'react-hot-toast'
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       {children}

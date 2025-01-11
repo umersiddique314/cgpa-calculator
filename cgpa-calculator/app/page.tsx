@@ -10,7 +10,6 @@ import { calculateCGPA, groupBySemester, calculateSemesterCGPA, caclilateOverall
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-hot-toast'
 import { Footer } from './components/Footer'
-import { NextSeo } from 'next-seo';
 
 export default function Home() {
   const [regNumber, setRegNumber] = useState('')
@@ -124,23 +123,6 @@ export default function Home() {
 
   return (
     <>
-      <NextSeo
-        title="UAF CGPA Calculator | University of Agriculture Faisalabad Official GPA Calculator"
-        description="Official CGPA Calculator for University of Agriculture Faisalabad (UAF) students. Calculate UAF semester GPA and CGPA instantly. Trusted by UAF students across all departments and programs."
-        canonical="https://uafcalculator.live"
-        openGraph={{
-          title: 'UAF CGPA Calculator | Fast & Accurate University GPA Calculator',
-          description: 'Calculate your UAF CGPA instantly. Free tool for University of Agriculture Faisalabad students.',
-          images: [
-            {
-              url: 'https://uafcalculator.live/og-image.png',
-              width: 1200,
-              height: 630,
-              alt: 'UAF CGPA Calculator',
-            },
-          ],
-        }}
-      />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <script
           type="application/ld+json"
@@ -244,7 +226,7 @@ export default function Home() {
                 How to Use UAF Grade Calculator
               </h2>
               <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                Calculate your University of Agriculture Faisalabad (UAF) CGPA instantly with our official calculator.
+                Calculate your University of Agriculture Faisalabad (UAF) CGPA instantly with our Calculator.
                 Designed specifically for UAF students following the university's grading criteria.
               </p>
             </div>
@@ -372,7 +354,7 @@ export default function Home() {
                 </div>
                 <ul className="space-y-4">
                   {[
-                    "Official UAF CGPA calculation system implementation",
+                    "UAF CGPA calculation system implementation",
                     "Complete UAF faculty and department grade support",
                     "UAF semester system grade calculation",
                     "UAF credit hour policy compliance",
@@ -440,7 +422,7 @@ export default function Home() {
 
             <div className="mt-8 text-center">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Official UAF CGPA Calculator • Supporting all UAF Academic Sessions (2022-2025) • Updated with latest UAF grading policies
+                UAF CGPA Calculator • Supporting all UAF Academic Sessions (2022-2025) • Updated with latest UAF grading policies
               </p>
             </div>
           </div>

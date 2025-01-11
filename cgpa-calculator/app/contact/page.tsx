@@ -5,7 +5,16 @@ import emailjs from '@emailjs/browser'
 import toast, { Toaster } from 'react-hot-toast'
 import { Mail, Send, Loader2, User, AtSign, MessageSquare } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { NextSeo } from 'next-seo'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Contact Us',
+  description: 'Get in touch with the UAF CGPA Calculator team. We\'d love to hear from you and help with any questions.',
+  openGraph: {
+    title: 'Contact Us | UAF CGPA Calculator',
+    description: 'Get in touch with the UAF CGPA Calculator team.'
+  }
+}
 
 export default function ContactPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -42,15 +51,6 @@ export default function ContactPage() {
 
   return (
     <>
-      <NextSeo
-        title="Contact Us | UAF CGPA Calculator"
-        description="Get in touch with the UAF CGPA Calculator team. We'd love to hear from you and help with any questions."
-        canonical="https://uafcalculator.live/contact"
-        openGraph={{
-          title: 'Contact Us | UAF CGPA Calculator',
-          description: 'Get in touch with the UAF CGPA Calculator team.',
-        }}
-      />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
         <Toaster position="top-right" />
         <motion.div
@@ -73,7 +73,7 @@ export default function ContactPage() {
                     <Mail className="w-6 h-6 mr-3" />
                     <span>contact@uafcalculator.live</span>
                   </div>
-                    {/* <div className="flex items-center">
+                  {/* <div className="flex items-center">
                       <User className="w-6 h-6 mr-3" />
                       <span>+1 (555) 123-4567</span>
                     </div> */}

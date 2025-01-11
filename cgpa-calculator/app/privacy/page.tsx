@@ -1,8 +1,16 @@
-'use client'
-
 import { Shield, BookOpen, Lock, Mail, Globe } from 'lucide-react'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description: 'Learn about how we protect your privacy and handle your information at UAF CGPA Calculator.',
+  openGraph: {
+    title: 'Privacy Policy | UAF CGPA Calculator',
+    description: 'Our commitment to protecting your privacy and personal information.'
+  }
+}
+
 import { motion } from 'framer-motion'
-import { NextSeo } from 'next-seo'
 
 const PolicySection = ({ icon: Icon, title, children }: { icon: any, title: string, children: React.ReactNode }) => (
 	<motion.div
@@ -22,20 +30,10 @@ const PolicySection = ({ icon: Icon, title, children }: { icon: any, title: stri
 	</motion.div>
 )
 
-const PrivacyPolicy = () => {
-	return (
-		<>
-			<NextSeo
-				title="Privacy Policy | UAF CGPA Calculator"
-				description="Learn about how we protect your privacy and handle your information at UAF CGPA Calculator."
-				canonical="https://uafcalculator.live/privacy"
-				openGraph={{
-					title: 'Privacy Policy | UAF CGPA Calculator',
-					description: 'Learn about how we protect your privacy and handle your information.',
-				}}
-			/>
-			<div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-				<div className="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+export default function PrivacyPolicy() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
 					<motion.div
 						initial={{ opacity: 0, y: -20 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -101,9 +99,6 @@ const PrivacyPolicy = () => {
 						</PolicySection>
 					</div>
 				</div>
-			</div>
-		</>
-	)
+    </div>
+  )
 }
-
-export default PrivacyPolicy
