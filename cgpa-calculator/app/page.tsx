@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { AlertCircle, BookOpen, ChevronDown, ChevronUp, Calculator, Search, Database, Shield, CheckCircle2, GraduationCap, School, Award } from 'lucide-react'
-import { Header } from './components/Header'
+import Header from './components/Header'
 import { SearchForm } from './components/SearchForm'
 import { SemesterCard } from './components/SemesterCard'
 import { ResultData, CourseRow } from './types'

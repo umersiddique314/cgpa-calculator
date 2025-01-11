@@ -32,6 +32,7 @@
     "tailwindcss": "^3.4.1"
   },
   "devDependencies": {
+    "critters": "^0.0.23",
     "rimraf": "^5.0.5",
     "typescript": "^5"
   },
