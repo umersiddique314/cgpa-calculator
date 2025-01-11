@@ -8,11 +8,3 @@ export const metadata: Metadata = {
     description: 'Get in touch with the UAF CGPA Calculator team.'
   }
 }
-
-export default function ContactLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return children
-}
