@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   },
   description: "CGPA Calculator for University of Agriculture Faisalabad (UAF) students. Calculate UAF semester GPA and CGPA instantly. Trusted by UAF students across all departments and programs.",
   keywords: keywords,
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/icon.png',
+  },
   openGraph: {
     title: 'UAF CGPA Calculator | Fast & Accurate University GPA Calculator',
     description: 'Calculate your UAF CGPA instantly. Free tool for University of Agriculture Faisalabad students.',
