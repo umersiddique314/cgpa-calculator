@@ -51,18 +51,8 @@ export default function Home() {
     try {
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.uafcalculator.live/api";
-      const token = await generateToken();
-
-      if (!token) {
-        throw new Error('Failed to generate authentication token');
-      }
-
-      const response = await fetch(`${apiUrl}/result?reg_number=${regNumber}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
+  
+      const response = await fetch(`${apiUrl}/result?reg_number=${regNumber}`)
       const data = await response.json()
 
       if (data.status === 'success') {
