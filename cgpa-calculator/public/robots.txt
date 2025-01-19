@@ -7,4 +7,3 @@ Host: https://uafcalculator.live
 
 # Sitemaps
 Sitemap: https://uafcalculator.live/sitemap.xml
-Sitemap: https://uafcalculator.live/server-sitemap.xml

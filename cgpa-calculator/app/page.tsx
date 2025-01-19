@@ -10,6 +10,7 @@ import { calculateCGPA, groupBySemester, calculateSemesterCGPA, caclilateOverall
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-hot-toast'
 import { Footer } from './components/Footer'
+import { generateToken } from './utils/jwt'
 
 export default function Home() {
   const [regNumber, setRegNumber] = useState('')
@@ -48,8 +49,20 @@ export default function Home() {
     }, 300)
 
     try {
+
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.uafcalculator.live/api";
-      const response = await fetch(`${apiUrl}/result?reg_number=${regNumber}`)
+      const token = await generateToken();
+
+      if (!token) {
+        throw new Error('Failed to generate authentication token');
+      }
+
+      const response = await fetch(`${apiUrl}/result?reg_number=${regNumber}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
       const data = await response.json()
 
       if (data.status === 'success') {

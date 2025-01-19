@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     default: "UAF CGPA Calculator | Calculate Your University GPA Easily",
     template: "%s | UAF CGPA Calculator"
   },
-  description: "CGPA Calculator for University of Agriculture Faisalabad students. Calculate semester GPA and CGPA accurately with our easy-to-use tool. Get instant results for all departments.",
+  description: "CGPA Calculator for UAF students. Calculate semester GPA and CGPA accurately with our easy-to-use tool. Get instant results for all departments.",
   keywords: [...keywords],
   authors: [{ name: "Haseeb Usman" }],
   creator: "Haseeb Usman",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://uafcalculator.live',
     title: 'UAF CGPA Calculator | Calculate Your University GPA Easily',
-    description: 'Free UAF CGPA Calculator for University of Agriculture Faisalabad students. Calculate semester GPA and CGPA accurately with our easy-to-use tool.',
+    description: 'Free UAF CGPA UAF students. Calculate semester GPA and CGPA accurately with our easy-to-use tool.',
     siteName: 'UAF CGPA Calculator',
     images: [
       {

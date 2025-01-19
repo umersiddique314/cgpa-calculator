@@ -12,6 +12,12 @@ export async function GET() {
       priority: 1.0,
     },
     {
+      loc: `${siteUrl}/privacy`,
+      lastmod: new Date().toISOString(),
+      changefreq: 'weekly',
+      priority: 0.8,
+    },
+    {
       loc: `${siteUrl}/contact`,
       lastmod: new Date().toISOString(),
       changefreq: 'weekly',
@@ -19,6 +25,5 @@ export async function GET() {
     }
   ]
 
-  // Return the response directly
   return getServerSideSitemap(fields)
 }
