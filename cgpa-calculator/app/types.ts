@@ -14,13 +14,16 @@ export interface CourseRow {
   [key: string]: string | undefined;
 }
 
+export interface ResultTable {
+  rows: CourseRow[];
+  headers: string[];
+}
+
 export interface ResultData {
   student_info: {
     "Student Full Name": string;
     "Registration #": string;
     [key: string]: string;
   };
-  result_table: {
-    rows: CourseRow[];
-  };
+  result_table: ResultTable;
 }

@@ -76,7 +76,7 @@ export const DownloadableResult = ({ result, includedCourses }: DownloadableResu
             <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1rem' }}>
               <thead>
                 <tr style={{ backgroundColor: '#f3f4f6' }}>
-                  {result.result_table.headers.map((header) => (
+                  {Object.keys(includedCourses[0] || {}).map((header) => (
                     <th key={header} style={{ 
                       border: '1px solid #000',
                       padding: '8px',
@@ -93,7 +93,7 @@ export const DownloadableResult = ({ result, includedCourses }: DownloadableResu
               <tbody>
                 {courses.map((course, index) => (
                   <tr key={index} style={{ backgroundColor: index % 2 === 0 ? '#ffffff' : '#f9fafb' }}>
-                    {result.result_table.headers.map((header) => (
+                    {Object.keys(includedCourses[0] || {}).map((header) => (
                       <td key={header} style={{ 
                         border: '1px solid #000',
                         padding: '8px',
