@@ -4,6 +4,7 @@ import { SemesterCard } from './SemesterCard'
 import { CourseRow, ResultData } from '../types'
 import { groupBySemester, calculateSemesterCGPA, caclilateOverallCGPA } from '../utils/calculations'
 import { DownloadableResult } from './DownloadableResult';
+import { useEffect, useState } from 'react'
 
 interface ResultDisplayProps {
   result: ResultData
@@ -24,6 +25,13 @@ export const ResultDisplay = ({
   onAddCourse,
   toggleSemesterExpansion
 }: ResultDisplayProps) => {
+  const [overallCGPA, setOverallCGPA] = useState(0) 
+
+  useEffect(() => {
+    setOverallCGPA(caclilateOverallCGPA(includedCourses))
+  }, [includedCourses])
+
+
   const downloadPDF = async () => {
     const tempDiv = document.createElement('div');
     tempDiv.style.position = 'absolute';
@@ -110,7 +118,7 @@ export const ResultDisplay = ({
           <div className="text-right">
             <p className="text-sm text-gray-600 dark:text-gray-400">Total CGPA</p>
             <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-              {caclilateOverallCGPA(includedCourses).toFixed(4)}
+              {overallCGPA.toFixed(4)}
             </p>
           </div>
         </div>
