@@ -11,6 +11,7 @@ import { ResultData, CourseRow } from './types'
 import { toast } from 'react-hot-toast'
 import { AnimatePresence } from 'framer-motion'
 import { calculateSemesterCGPA, groupBySemester, resetOverallCGPA } from './utils/calculations'
+import { LoadingSpinner } from './components/LoadingSpinner'
 
 export default function Home() {
   const [regNumber, setRegNumber] = useState('')
@@ -156,17 +157,21 @@ export default function Home() {
           }}
         />
         
-        <AnimatePresence>
-          {result && (
-            <ResultDisplay
-              result={result}
-              includedCourses={includedCourses}
-              expandedSemesters={expandedSemesters}
-              windowWidth={windowWidth}
-              onRemoveCourse={handleRemoveCourse}
-              onAddCourse={handleAddCourse}
-              toggleSemesterExpansion={toggleSemesterExpansion}
-            />
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <LoadingSpinner progress={progress} />
+          ) : (
+            result && (
+              <ResultDisplay
+                result={result}
+                includedCourses={includedCourses}
+                expandedSemesters={expandedSemesters}
+                windowWidth={windowWidth}
+                onRemoveCourse={handleRemoveCourse}
+                onAddCourse={handleAddCourse}
+                toggleSemesterExpansion={toggleSemesterExpansion}
+              />
+            )
           )}
         </AnimatePresence>
         
