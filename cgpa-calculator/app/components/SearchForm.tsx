@@ -91,8 +91,6 @@ export const SearchForm = ({
           </a>
         </label>
       </div>
-
-      {/* Error message and action buttons */}
       {error && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}

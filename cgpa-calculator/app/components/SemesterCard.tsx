@@ -104,7 +104,7 @@ export const SemesterCard = ({
                 <Plus className="w-5 h-5 text-green-600 dark:text-green-400" />
               </button>
               <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                CGP: {semesterCGPA.toFixed(4)}
+                GPA: {semesterCGPA.toFixed(4)}
               </span>
               {isMobile && (
                 isExpanded ? (
