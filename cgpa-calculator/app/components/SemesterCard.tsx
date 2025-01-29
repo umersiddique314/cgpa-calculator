@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { BookOpen, Trash2, ChevronDown, ChevronUp, Info } from 'lucide-react'
+import { BookOpen, Trash2, ChevronDown, ChevronUp, Info, Plus } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getGradeColor } from '../utils/gradeUtils'
 import { CourseRow } from '../types'
 import { calculateGradePoints } from '../utils/calculations'
 import { CourseDetailModal } from './CourseDetailModal'
+import { AddCourseModal } from './AddCourseModal'
 
 export interface SemesterCardProps {
   semester: string;
@@ -14,6 +15,7 @@ export interface SemesterCardProps {
   isExpanded: boolean;
   onToggleExpand: () => void;
   isMobile: boolean;
+  onAddCourse: (course: CourseRow) => void;
 }
 
 export const SemesterCard = ({
@@ -23,9 +25,11 @@ export const SemesterCard = ({
   onRemoveCourse,
   isExpanded,
   onToggleExpand,
-  isMobile
+  isMobile,
+  onAddCourse
 }: SemesterCardProps) => {
   const [selectedCourse, setSelectedCourse] = useState<CourseRow | null>(null)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
   const tableContent = (
     <table className="w-full text-sm lg:text-base">
@@ -92,8 +96,15 @@ export const SemesterCard = ({
               {semester}
             </h2>
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                title="Add course"
+              >
+                <Plus className="w-5 h-5 text-green-600 dark:text-green-400" />
+              </button>
               <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                CGPA: {semesterCGPA.toFixed(4)}
+                GPA: {semesterCGPA.toFixed(4)}
               </span>
               {isMobile && (
                 isExpanded ? (
@@ -135,6 +146,12 @@ export const SemesterCard = ({
           course={selectedCourse}
         />
       )}
+      <AddCourseModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        semester={semester}
+        onAddCourse={onAddCourse}
+      />
     </>
   )
 }

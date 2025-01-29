@@ -7,7 +7,7 @@ const PolicySection = ({ icon: Icon, title, children }: { icon: any, title: stri
     <div className="flex items-center gap-4 mb-4">
       <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-full">
         <Icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-      </div>
+      </div> 
       <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
     </div>
     <div className="text-gray-600 dark:text-gray-400 space-y-4">
