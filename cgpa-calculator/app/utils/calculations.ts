@@ -2,8 +2,8 @@ import { CourseRow } from '../types'
 let overallCGPA = 0;
 let totalSemesters = 0;
 export const calculateGradePoints = (course: CourseRow) => {
-  const totalMarks = parseFloat(course.Total)
-  const creditHours = parseCreditHours(course["Credit Hours"])
+  const totalMarks = parseFloat(course.total)
+  const creditHours = parseCreditHours(course.credit_hours)
   if (!creditHours || isNaN(totalMarks)) return 0
 
   let maxGradePoints = 0
@@ -67,7 +67,7 @@ export const calculateGradePoints = (course: CourseRow) => {
 }
 
 export const parseCreditHours = (creditHoursStr: string) => {
-  const match = creditHoursStr.match(/^(\d+)/)
+  const match = creditHoursStr?.match(/^(\d+)/)
   if (match) {
     return parseInt(match[1], 10)
   }
@@ -79,7 +79,7 @@ export const calculateCGPA = (courses: CourseRow[]) => {
   let totalCreditHours = 0
 
   courses.forEach(course => {
-    const creditHours = parseCreditHours(course["Credit Hours"])
+    const creditHours = parseCreditHours(course.credit_hours)
     const gradePoints = calculateGradePoints(course)
     if (creditHours !== null) {
       totalGradePoints += gradePoints
@@ -106,7 +106,7 @@ export const resetOverallCGPA = () => {
 }
 
 function getSemesterType(semester: string): 'Spring' | 'Winter' {
-  return semester.toLowerCase().includes('spring') ? 'Spring' : 'Winter';
+  return semester?.toLowerCase().includes('spring') ? 'Spring' : 'Winter';
 }
 
 function getSemesterYear(semester: string): number {
@@ -115,11 +115,11 @@ function getSemesterYear(semester: string): number {
 }
 
 function isValidImprovement(original: CourseRow, improvement: CourseRow): boolean {
-  const originalType = getSemesterType(original.Semester);
-  const improvementType = getSemesterType(improvement.Semester);
+  const originalType = getSemesterType(original.semester);
+  const improvementType = getSemesterType(improvement.semester);
 
-  const originalYear = getSemesterYear(original.Semester);
-  const improvementYear = getSemesterYear(improvement.Semester);
+  const originalYear = getSemesterYear(original.semester);
+  const improvementYear = getSemesterYear(improvement.semester);
 
   return originalType === improvementType && improvementYear > originalYear;
 }
@@ -136,7 +136,7 @@ function needsImprovement(grade: string): boolean {
 function compareSemesters(sem1: string, sem2: string): number {
   // Extract year range (e.g., "2023-2024" from "Spring Semester 2023-2024")
   const getYearRange = (sem: string) => {
-    const match = sem.match(/(\d{4})-(\d{4})/);
+    const match = sem?.match(/(\d{4})-(\d{4})/);
     return match ? [parseInt(match[1]), parseInt(match[2])] : [0, 0];
   };
 
@@ -159,7 +159,7 @@ function compareSemesters(sem1: string, sem2: string): number {
 export function groupBySemester(courses: CourseRow[]): Record<string, CourseRow[]> {
   // Sort courses by semester chronologically
   const sortedCourses = [...courses].sort((a, b) =>
-    compareSemesters(a.Semester, b.Semester)
+    compareSemesters(a.semester, b.semester)
   );
 
   // Track the latest version of each course
@@ -170,17 +170,17 @@ export function groupBySemester(courses: CourseRow[]): Record<string, CourseRow[
 
   // First pass: identify all courses and their improvements
   sortedCourses.forEach(course => {
-    const courseCode = course["Course Code"];
+    const courseCode = course.course_code;
     const existing = courseVersions.get(courseCode);
 
     if (!existing) {
       courseVersions.set(courseCode, {
-        originalSemester: course.Semester,
+        originalSemester: course.semester,
         latestGrade: course
       });
-    } else if (needsImprovement(existing.latestGrade.Grade)) {
+    } else if (needsImprovement(existing.latestGrade.grade)) {
       // Only update if previous grade needed improvement
-      if (compareSemesters(course.Semester, existing.latestGrade.Semester) > 0) {
+      if (compareSemesters(course.semester, existing.latestGrade.semester) > 0) {
         courseVersions.set(courseCode, {
           originalSemester: existing.originalSemester,
           latestGrade: course
@@ -194,18 +194,18 @@ export function groupBySemester(courses: CourseRow[]): Record<string, CourseRow[
 
   // Process each original course
   sortedCourses.forEach(course => {
-    const courseCode = course["Course Code"];
+    const courseCode = course.course_code;
     const versionInfo = courseVersions.get(courseCode);
 
     if (!versionInfo) return;
 
     // Only process if this is the original semester or it's the improved grade
-    if (course.Semester === versionInfo.originalSemester) {
-      if (!semesterGroups[course.Semester]) {
-        semesterGroups[course.Semester] = [];
+    if (course.semester === versionInfo.originalSemester) {
+      if (!semesterGroups[course.semester]) {
+        semesterGroups[course.semester] = [];
       }
       // Use the latest grade in the original semester
-      semesterGroups[course.Semester].push(versionInfo.latestGrade);
+      semesterGroups[course.semester].push(versionInfo.latestGrade);
     }
   });
 
