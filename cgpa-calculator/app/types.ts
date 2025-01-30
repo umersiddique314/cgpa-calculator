@@ -1,17 +1,16 @@
 export interface CourseRow {
-  "Course Code": string;
-  "Course Title": string;
-  "Credit Hours": string;
-  Grade: string;
-  Semester: string;
-  Total: string;
-  Assignment?: string;
-  Final?: string;
-  Mid?: string;
-  Practical?: string;
-  Srts?: string;
-  Sr?: string;
-  [key: string]: string | undefined;
+  sr: string;
+  semester: string;
+  teacher_name: string;
+  course_code: string;
+  course_title: string;
+  credit_hours: string;
+  mid: string;
+  assignment: string;
+  final: string;
+  practical: string;
+  total: string;
+  grade: string;
 }
 
 export interface ResultTable {
@@ -21,8 +20,8 @@ export interface ResultTable {
 
 export interface ResultData {
   student_info: {
-    "Student Full Name": string;
-    "Registration #": string;
+    "student_full_name": string;
+    "registration_": string;
     [key: string]: string;
   };
   result_table: ResultTable;

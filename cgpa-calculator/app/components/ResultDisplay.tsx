@@ -79,7 +79,7 @@ export const ResultDisplay = ({
         heightLeft -= pageHeight;
       }
 
-      pdf.save(`${result.student_info['Registration #']}_result.pdf`);
+      pdf.save(`${result.student_info.registration_}_result.pdf`);
     } finally {
       document.body.removeChild(tempDiv);
     }
@@ -110,9 +110,11 @@ export const ResultDisplay = ({
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {result.student_info["Student Full Name"]}
+                {result.student_info.student_full_name}
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{result.student_info["Registration #"]}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {result.student_info.registration_}
+              </p>
             </div>
           </div>
           <div className="text-right">

@@ -45,26 +45,25 @@ export const AddCourseModal = ({ isOpen, onClose, semester, onAddCourse }: AddCo
     const grade = calculateGrade(obtained, total);
     
     const newCourse: CourseRow = {
-      Semester: semester,
-      "Credit Hours": formatCreditHours(courseData.creditHours),
-      "Course Code": courseData.courseCode,
-      Total: courseData.obtainedMarks,
-      Grade: grade,
-      Mid: "0",
-      Final: "0",
-      Assignment: "0",
-      Practical: "0",
-      Sr: new Date().getTime().toString(),
-      "Teacher Name": "",
-      "Course Title": ""
+      semester: semester,
+      credit_hours: formatCreditHours(courseData.creditHours),
+      course_code: courseData.courseCode,
+      total: courseData.obtainedMarks,
+      grade: grade,
+      mid: "0",
+      final: "0",
+      assignment: "0",
+      practical: "0",
+      sr: new Date().getTime().toString(),
+      teacher_name: "",
+      course_title: ""
     }
 
     onAddCourse(newCourse)
-    setCourseData(initialState) // Reset form to initial state
+    setCourseData(initialState) 
     onClose()
   }
 
-  // Reset form when modal is closed
   const handleClose = () => {
     setCourseData(initialState)
     onClose()

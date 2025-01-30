@@ -46,7 +46,7 @@ export const SemesterCard = ({
       <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
         {courses.map((course) => (
           <tr
-            key={course["Course Code"]}
+            key={course.course_code}
             className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
           >
             <td className="px-1 lg:px-3 py-2.5 lg:py-3.5 text-[11px] lg:text-sm">
@@ -54,15 +54,15 @@ export const SemesterCard = ({
                 onClick={() => setSelectedCourse(course)}
                 className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors"
               >
-                <span className="whitespace-nowrap">{course["Course Code"]}</span>
+                <span className="whitespace-nowrap">{course.course_code}</span>
                 <Info className="w-3 h-3 lg:w-4 lg:h-4 flex-shrink-0" />
               </button>
             </td>
-            <td className="px-1 lg:px-2 py-2.5 lg:py-3.5 text-[11px] lg:text-sm">{course["Credit Hours"]}</td>
-            <td className="px-1 lg:px-2 py-2.5 lg:py-3.5 text-[11px] lg:text-sm">{course["Total"]}</td>
+            <td className="px-1 lg:px-2 py-2.5 lg:py-3.5 text-[11px] lg:text-sm">{course.credit_hours}</td>
+            <td className="px-1 lg:px-2 py-2.5 lg:py-3.5 text-[11px] lg:text-sm">{course.total}</td>
             <td className="px-1 lg:px-2 py-2.5 lg:py-3.5">
-              <span className={`px-1 lg:px-2 py-0.5 rounded text-[10px] lg:text-xs font-medium ${getGradeColor(course.Grade)}`}>
-                {course.Grade}
+              <span className={`px-1 lg:px-2 py-0.5 rounded text-[10px] lg:text-xs font-medium ${getGradeColor(course.grade)}`}>
+                {course.grade}
               </span>
             </td>
             <td className="px-1 lg:px-2 py-2.5 lg:py-3.5 text-[11px] lg:text-sm text-blue-600 font-medium">
@@ -70,7 +70,7 @@ export const SemesterCard = ({
             </td>
             <td className="px-1 lg:px-2 py-2.5 lg:py-3.5">
               <button
-                onClick={() => onRemoveCourse(course["Course Code"])}
+                onClick={() => onRemoveCourse(course.course_code)} 
                 className="text-[10px] lg:text-xs text-red-500 hover:text-red-700 transition-colors"
                 title="Remove course"
               >
