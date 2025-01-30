@@ -19,9 +19,13 @@ export interface ResultTable {
 }
 
 export interface ResultData {
+  metadata: {
+    title: string;
+    header_image: string;
+  };
   student_info: {
-    "student_full_name": string;
-    "registration_": string;
+    student_full_name: string;
+    registration_: string;
     [key: string]: string;
   };
   result_table: ResultTable;

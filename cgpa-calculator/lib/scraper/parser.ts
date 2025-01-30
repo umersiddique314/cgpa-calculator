@@ -1,102 +1,64 @@
 import * as cheerio from 'cheerio';
-
-export interface ResultData {
-  status: string;
-  response_time: string;
-  data: {
-    title: string;
-    header_image: string;
-    student_info: {
-      "Registration #": string;
-      "Student Full Name": string;
-    };
-    result_table: {
-      headers: string[];
-      rows: Array<{
-        "Sr": string;
-        "Semester": string;
-        "Teacher Name": string;
-        "Course Code": string;
-        "Course Title": string;
-        "Credit Hours": string;
-        "Mid": string;
-        "Assignment": string;
-        "Final": string;
-        "Practical": string;
-        "Total": string;
-        "Grade": string;
-      }>;
-    };
-  };
-}
+import type { ResultData, CourseRow } from '../../app/types';
 
 export class ResultParser {
   static parse(html: string): ResultData {
     const startTime = Date.now();
     const $ = cheerio.load(html);
 
-    // Get result table headers with proper casing
-    const headers = [
-      'Sr',
-      'Semester',
-      'Teacher Name',
-      'Course Code',
-      'Course Title',
-      'Credit Hours',
-      'Mid',
-      'Assignment',
-      'Final',
-      'Practical',
-      'Total',
-      'Grade'
-    ];
-
-    // Get result rows
-    const rows: any[] = [];
-    $('table.table.tab-content').last().find('tr:gt(0)').each((_, row) => {
-      const rowData: Record<string, string> = {};
-      const cols = $(row).find('td');
-      
-      if (cols.length === headers.length) {
-        cols.each((i, col) => {
-          rowData[headers[i]] = $(col).text().trim();
-        });
-        if (Object.keys(rowData).length > 0) {
-          rows.push(rowData);
-        }
-      }
-    });
-
-    // Get student info with exact key names
-    const studentInfo: Record<string, string> = {};
+    // Get student info with proper field names
+    const studentInfo: ResultData['student_info'] = {
+      student_full_name: '',
+      registration_: '',
+    };
+    
     $('table.table.tab-content').first().find('tr').each((_, row) => {
       const cols = $(row).find('td');
       if (cols.length === 2) {
         const key = $(cols[0]).text().trim();
         const value = $(cols[1]).text().trim();
-        if (key.includes('Registration') || key.includes('Student Full Name')) {
-          studentInfo[key.replace(/:/g, '').trim()] = value;
+        if (key.includes('Registration')) {
+          studentInfo.registration_ = value;
+        } else if (key.includes('Student Full Name')) {
+          studentInfo.student_full_name = value;
         }
       }
     });
 
-    // Calculate response time
-    const responseTime = ((Date.now() - startTime) / 1000).toFixed(2);
+    // Get result table headers
+    const headers = [
+      'sr', 'semester', 'teacher_name', 'course_code', 'course_title',
+      'credit_hours', 'mid', 'assignment', 'final', 'practical', 'total', 'grade'
+    ];
+
+    // Get result rows
+    const rows: CourseRow[] = [];
+    $('table.table.tab-content').last().find('tr:gt(0)').each((_, row) => {
+      const rowData = headers.reduce((acc, key) => ({
+        ...acc,
+        [key]: ''
+      }), {} as CourseRow);
+
+      $(row).find('td').each((i, col) => {
+        if (i < headers.length) {
+          rowData[headers[i] as keyof CourseRow] = $(col).text().trim();
+        }
+      });
+
+      if (Object.keys(rowData).length === headers.length) {
+        rows.push(rowData);
+      }
+    });
 
     return {
-      status: 'success',
-      response_time: `${responseTime}s`,
-      data: {
+      metadata: {
         title: $('h3[align="center"]').first().text().trim() || 'Result Award List',
-        header_image: 'lms-head.png',
-        student_info: {
-          "Registration #": studentInfo["Registration #"] || '',
-          "Student Full Name": studentInfo["Student Full Name"] || ''
-        },
-        result_table: {
-          headers,
-          rows
-        }
+        header_image: 'lms-head.png'
+      },
+      student_info: studentInfo,
+      result_table: {
+        headers,
+        rows
       }
     };
   }

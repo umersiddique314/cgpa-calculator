@@ -1,4 +1,4 @@
-//api route /api/result
+
 import { NextRequest, NextResponse } from 'next/server';
 import { scraper } from '@/lib/scraper';
 import { ResultParser } from '@/lib/scraper/parser';
@@ -29,13 +29,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       status: 'success',
       data: {
-        title: result.metadata.title,
-        header_image: result.metadata.header_image,
+        metadata: result.metadata,
         student_info: result.student_info,
-        result_table: {
-          headers: result.headers,
-          rows: result.results
-        }
+        result_table: result.result_table
       }
     });
   } catch (error) {
