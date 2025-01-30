@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { CONFIG } from './config';
-import type { ResultData } from './parser';
+import type { CourseRow, ResultData } from '../../app/types'; 
 
 export class UAFScraper {
   private async submitFormAndGetResult(regNumber: string): Promise<string> {
@@ -41,7 +41,7 @@ export class UAFScraper {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         },
         maxRedirects: 5,
-        validateStatus: null, // Accept all status codes to handle them manually
+        validateStatus: null, 
         timeout: CONFIG.AXIOS_TIMEOUT,
         withCredentials: true
       });
@@ -104,9 +104,11 @@ export class UAFScraper {
             header_image: 'lms-head.png'
           },
           student_info: studentInfo,
-          headers: resultData.headers,
-          results: resultData.results
-        };
+          result_table: {
+            headers: resultData.headers,
+            rows: resultData.results
+          }
+        } 
 
       } catch (error) {
         lastError = error as Error;
@@ -120,24 +122,43 @@ export class UAFScraper {
     throw lastError || new Error('Failed to fetch results after maximum retries');
   }
 
-  private extractStudentInfo($: cheerio.CheerioAPI): Record<string, string> {
-    const info: Record<string, string> = {};
+  private extractStudentInfo($: cheerio.CheerioAPI): ResultData['student_info'] {
+    type StudentInfo = {
+      student_full_name: string;
+      registration_: string;
+      [key: string]: string;
+    };
+
+    const info: StudentInfo = {
+      student_full_name: '',
+      registration_: '',
+    };
+    
     $('table.table.tab-content').first().find('tr').each((_, row) => {
       const cols = $(row).find('td');
       if (cols.length === 2) {
         const key = $(cols[0]).text().trim().toLowerCase().replace(/[\s#:]+/g, '_');
         const value = $(cols[1]).text().trim();
-        if (key && value) {
-          info[key] = value;
+        if (key === 'name') {
+          info.student_full_name = value;
+        } else if (key === 'registration_no') {
+          info.registration_ = value;
+        } else if (key && value) {
+          (info as Record<string, string>)[key] = value;
         }
       }
     });
+
+    if (!info.student_full_name || !info.registration_) {
+      throw new Error('Required student information (name or registration) is missing');
+    }
+
     return info;
   }
 
-  private extractResultData($: cheerio.CheerioAPI) {
+  private extractResultData($: cheerio.CheerioAPI): { headers: string[], results: CourseRow[] } {
     const headers: string[] = [];
-    const results: Record<string, string>[] = [];
+    const results: CourseRow[] = [];
 
     const resultTable = $('table.table.tab-content').last();
     
@@ -146,15 +167,27 @@ export class UAFScraper {
       headers.push($(th).text().trim().toLowerCase().replace(/\s+/g, '_'));
     });
 
+    // Validate required headers
+    const requiredFields: (keyof CourseRow)[] = [
+      'sr', 'semester', 'teacher_name', 'course_code', 'course_title',
+      'credit_hours', 'mid', 'assignment', 'final', 'practical', 'total', 'grade'
+    ];
+
     // Extract rows
     resultTable.find('tr:gt(0)').each((_, row) => {
-      const rowData: Record<string, string> = {};
+      const rowData = requiredFields.reduce((acc, field) => ({
+        ...acc,
+        [field]: ''
+      }), {} as CourseRow);
+
       $(row).find('td').each((i, col) => {
         if (i < headers.length) {
-          rowData[headers[i]] = $(col).text().trim();
+          const key = headers[i] as keyof CourseRow;
+          rowData[key] = $(col).text().trim();
         }
       });
-      if (Object.keys(rowData).length === headers.length) {
+
+      if (requiredFields.every(field => field in rowData)) {
         results.push(rowData);
       }
     });

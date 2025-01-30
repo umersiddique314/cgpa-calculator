@@ -53,19 +53,19 @@ export const CourseDetailModal = ({ isOpen, onClose, course }: CourseDetailModal
 								<div className="space-y-4">
 									<div>
 										<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Course Code</h3>
-										<p className="mt-1 text-gray-900 dark:text-gray-100">{course["Course Code"]}</p>
+										<p className="mt-1 text-gray-900 dark:text-gray-100">{course.course_code}</p>
 									</div>
 
 									<div className="grid grid-cols-2 gap-4">
 										<div>
 											<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Grade</h3>
-											<span className={`mt-1 inline-block px-2 py-0.5 rounded text-xs font-medium ${getGradeColor(course.Grade)}`}>
-												{course.Grade}
+											<span className={`mt-1 inline-block px-2 py-0.5 rounded text-xs font-medium ${getGradeColor(course.grade)}`}>
+												{course.grade}
 											</span>
 										</div>
 										<div>
 											<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Credit Hours</h3>
-											<p className="mt-1 text-gray-900 dark:text-gray-100">{course["Credit Hours"]}</p>
+											<p className="mt-1 text-gray-900 dark:text-gray-100">{course.credit_hours}</p>
 										</div>
 									</div>
 
@@ -74,25 +74,25 @@ export const CourseDetailModal = ({ isOpen, onClose, course }: CourseDetailModal
 										<div className="grid grid-cols-2 gap-3">
 											<div>
 												<p className="text-xs text-gray-500 dark:text-gray-400">Mid Term</p>
-												<p className="text-sm font-medium text-gray-900 dark:text-gray-100">{course.Mid}</p>
+												<p className="text-sm font-medium text-gray-900 dark:text-gray-100">{course.mid}</p>
 											</div>
 											<div>
 												<p className="text-xs text-gray-500 dark:text-gray-400">Assignment</p>
-												<p className="text-sm font-medium text-gray-900 dark:text-gray-100">{course.Assignment}</p>
+												<p className="text-sm font-medium text-gray-900 dark:text-gray-100">{course.assignment}</p>
 											</div>
 											<div>
 												<p className="text-xs text-gray-500 dark:text-gray-400">Final</p>
-												<p className="text-sm font-medium text-gray-900 dark:text-gray-100">{course.Final}</p>
+												<p className="text-sm font-medium text-gray-900 dark:text-gray-100">{course.final}</p>
 											</div>
 											<div>
 												<p className="text-xs text-gray-500 dark:text-gray-400">Practical</p>
-												<p className="text-sm font-medium text-gray-900 dark:text-gray-100">{course.Practical}</p>
+												<p className="text-sm font-medium text-gray-900 dark:text-gray-100">{course.practical}</p>
 											</div>
 										</div>
 										<div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
 											<div className="flex justify-between items-center">
 												<p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Marks</p>
-												<p className="text-lg font-semibold text-blue-600 dark:text-blue-400">{course.Total}</p>
+												<p className="text-lg font-semibold text-blue-600 dark:text-blue-400">{course.total}</p>
 											</div>
 										</div>
 									</div>
