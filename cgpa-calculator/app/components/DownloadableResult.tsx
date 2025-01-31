@@ -1,5 +1,5 @@
 import { ResultData, CourseRow } from '../types';
-import { groupBySemester, calculateSemesterCGPA, caclilateOverallCGPA } from '../utils/calculations';
+import { groupBySemester, calculateSemesterCGPA, calculateOverallCGPA } from '../utils/calculations';
 
 interface DownloadableResultProps {
   result: ResultData;
@@ -8,7 +8,7 @@ interface DownloadableResultProps {
 
 export const DownloadableResult = ({ result, includedCourses }: DownloadableResultProps) => {
   const groupedCourses = groupBySemester(includedCourses);
-  const overallCGPA = caclilateOverallCGPA(includedCourses);
+  const overallCGPA = calculateOverallCGPA(includedCourses);
 
   return (
     <div id="result-card" className="bg-white p-8" style={{ 

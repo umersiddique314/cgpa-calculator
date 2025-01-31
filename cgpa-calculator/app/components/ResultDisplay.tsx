@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion'
-import { BookOpen, Download } from 'lucide-react'
+import { BookOpen, Download, Loader2 } from 'lucide-react'
 import { SemesterCard } from './SemesterCard'
 import { CourseRow, ResultData } from '../types'
-import { groupBySemester, calculateSemesterCGPA, caclilateOverallCGPA } from '../utils/calculations'
+import { groupBySemester, calculateSemesterCGPA, calculateOverallCGPA } from '../utils/calculations'
 import { DownloadableResult } from './DownloadableResult';
 import { useEffect, useState } from 'react'
 
@@ -26,13 +26,15 @@ export const ResultDisplay = ({
   toggleSemesterExpansion
 }: ResultDisplayProps) => {
   const [overallCGPA, setOverallCGPA] = useState(0) 
+  const [isDownloading, setIsDownloading] = useState(false)
 
   useEffect(() => {
-    setOverallCGPA(caclilateOverallCGPA(includedCourses))
+    setOverallCGPA(calculateOverallCGPA(includedCourses))
   }, [includedCourses])
 
 
   const downloadPDF = async () => {
+    setIsDownloading(true)
     const tempDiv = document.createElement('div');
     tempDiv.style.position = 'absolute';
     tempDiv.style.left = '-9999px';
@@ -82,6 +84,7 @@ export const ResultDisplay = ({
       pdf.save(`${result.student_info.registration_}_result.pdf`);
     } finally {
       document.body.removeChild(tempDiv);
+      setIsDownloading(false)
     }
   };
 
@@ -95,10 +98,15 @@ export const ResultDisplay = ({
       <div className="flex justify-end mb-6">
         <button
           onClick={downloadPDF}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          disabled={isDownloading}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
         >
-          <Download className="w-4 h-4" />
-          Download
+          {isDownloading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Download className="w-4 h-4" />
+          )}
+          {isDownloading ? 'Downloading...' : 'Download'}
         </button>
       </div>
 

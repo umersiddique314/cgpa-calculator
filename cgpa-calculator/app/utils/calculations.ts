@@ -6,6 +6,9 @@ export const calculateGradePoints = (course: CourseRow) => {
   const creditHours = parseCreditHours(course.credit_hours)
   if (!creditHours || isNaN(totalMarks)) return 0
 
+  // Return 0 grade points for F grade
+  if (course.grade === 'F') return 0
+
   let maxGradePoints = 0
   let minGradePoints = 0
   let marksForMaxGP = 0
@@ -74,30 +77,87 @@ export const parseCreditHours = (creditHoursStr: string) => {
   return null
 }
 
+const getMaxGradePoints = (creditHours: number): number => {
+  switch (creditHours) {
+    case 5: return 20;
+    case 4: return 16;
+    case 3: return 12;
+    case 2: return 8;
+    case 1: return 4;
+    default: return 0;
+  }
+}
+
 export const calculateCGPA = (courses: CourseRow[]) => {
-  let totalGradePoints = 0
-  let totalCreditHours = 0
+  let totalObtainedGradePoints = 0
+  let totalMaximumGradePoints = 0
 
   courses.forEach(course => {
     const creditHours = parseCreditHours(course.credit_hours)
-    const gradePoints = calculateGradePoints(course)
     if (creditHours !== null) {
-      totalGradePoints += gradePoints
-      totalCreditHours += creditHours
+      const obtainedGradePoints = calculateGradePoints(course)
+      const maximumGradePoints = getMaxGradePoints(creditHours)
+      
+      totalObtainedGradePoints += obtainedGradePoints
+      totalMaximumGradePoints += maximumGradePoints
     }
   })
-  if (totalCreditHours === 0) return 0
-  return (totalGradePoints / totalCreditHours)
+
+  if (totalMaximumGradePoints === 0) return 0
+  
+  // Calculate CGPA by dividing obtained grade points by maximum possible grade points and multiplying by 4
+  const cgpa = (totalObtainedGradePoints / totalMaximumGradePoints) * 4
+  
+  // Round to 4 decimal places
+  return Math.round(cgpa * 10000) / 10000
 }
 
 export const calculateSemesterCGPA = (courses: CourseRow[]) => {
-  const res = calculateCGPA(courses)
-  overallCGPA += res
-  totalSemesters++
-  return res
+  const cgpa = calculateCGPA(courses)
+  return cgpa
 }
-export const caclilateOverallCGPA = (courses: CourseRow[]) => {
-  return (overallCGPA / totalSemesters)
+
+export const calculateOverallCGPA = (courses: CourseRow[]) => {
+  let totalObtainedGradePoints = 0
+  let totalCreditHours = 0
+
+  // Create a map to track the highest grade for each course code
+  const courseGrades = new Map<string, {
+    gradePoints: number;
+    creditHours: number;
+  }>();
+
+  courses.forEach(course => {
+    const creditHours = parseCreditHours(course.credit_hours)
+    if (creditHours !== null) {
+      const obtainedGradePoints = calculateGradePoints(course)
+      const courseCode = course.course_code
+
+      // Check if we've seen this course before
+      const existing = courseGrades.get(courseCode)
+      if (!existing || obtainedGradePoints > existing.gradePoints) {
+        // Store the higher grade points
+        courseGrades.set(courseCode, {
+          gradePoints: obtainedGradePoints,
+          creditHours: creditHours
+        })
+      }
+    }
+  })
+
+  // Sum up the highest grades for each unique course
+  courseGrades.forEach(({ gradePoints, creditHours }) => {
+    totalObtainedGradePoints += gradePoints
+    totalCreditHours += creditHours * 4 
+  })
+
+  if (totalCreditHours === 0) return 0
+  
+  // Calculate overall CGPA by dividing total obtained grade points by total possible credit hours and multiplying by 4
+  const cgpa = (totalObtainedGradePoints / totalCreditHours) * 4
+  
+  // Round to 4 decimal places
+  return Math.round(cgpa * 10000) / 10000
 }
 
 export const resetOverallCGPA = () => {
@@ -143,6 +203,7 @@ function compareSemesters(sem1: string, sem2: string): number {
   const [year1Start, year1End] = getYearRange(sem1);
   const [year2Start, year2End] = getYearRange(sem2);
 
+  // Compare academic years first
   if (year1Start !== year2Start) {
     return year1Start - year2Start;
   }
@@ -150,10 +211,7 @@ function compareSemesters(sem1: string, sem2: string): number {
     return year1End - year2End;
   }
 
-  // If years are same, check semester type (Spring comes after Winter)
-  const type1 = getSemesterType(sem1);
-  const type2 = getSemesterType(sem2);
-  return type1 === type2 ? 0 : (type1 === 'Spring' ? 1 : -1);
+  return 0; // If years are same, consider them equal for sorting purposes
 }
 
 export function groupBySemester(courses: CourseRow[]): Record<string, CourseRow[]> {
@@ -162,51 +220,49 @@ export function groupBySemester(courses: CourseRow[]): Record<string, CourseRow[
     compareSemesters(a.semester, b.semester)
   );
 
-  // Track the latest version of each course
-  const courseVersions = new Map<string, {
-    originalSemester: string;
-    latestGrade: CourseRow;
+  // Track first appearance and best grade for each course
+  const courseInfo = new Map<string, {
+    firstSemester: string;
+    bestGrade: CourseRow;
+    bestGradePoints: number;
   }>();
 
-  // First pass: identify all courses and their improvements
+  // First pass: record first appearance and track best grades
   sortedCourses.forEach(course => {
     const courseCode = course.course_code;
-    const existing = courseVersions.get(courseCode);
+    const currentGradePoints = calculateGradePoints(course);
+    const existing = courseInfo.get(courseCode);
 
     if (!existing) {
-      courseVersions.set(courseCode, {
-        originalSemester: course.semester,
-        latestGrade: course
+      // First time seeing this course
+      courseInfo.set(courseCode, {
+        firstSemester: course.semester,
+        bestGrade: course,
+        bestGradePoints: currentGradePoints
       });
-    } else if (needsImprovement(existing.latestGrade.grade)) {
-      // Only update if previous grade needed improvement
-      if (compareSemesters(course.semester, existing.latestGrade.semester) > 0) {
-        courseVersions.set(courseCode, {
-          originalSemester: existing.originalSemester,
-          latestGrade: course
-        });
-      }
+    } else if (currentGradePoints > existing.bestGradePoints) {
+      // Found a better grade
+      courseInfo.set(courseCode, {
+        firstSemester: existing.firstSemester, // Keep original semester
+        bestGrade: {
+          ...course,
+          semester: existing.firstSemester, // Use original semester
+          teacher_name: `${course.teacher_name} (Improved)` // Mark as improved
+        },
+        bestGradePoints: currentGradePoints
+      });
     }
   });
 
   // Group courses by semester
   const semesterGroups: Record<string, CourseRow[]> = {};
 
-  // Process each original course
-  sortedCourses.forEach(course => {
-    const courseCode = course.course_code;
-    const versionInfo = courseVersions.get(courseCode);
-
-    if (!versionInfo) return;
-
-    // Only process if this is the original semester or it's the improved grade
-    if (course.semester === versionInfo.originalSemester) {
-      if (!semesterGroups[course.semester]) {
-        semesterGroups[course.semester] = [];
-      }
-      // Use the latest grade in the original semester
-      semesterGroups[course.semester].push(versionInfo.latestGrade);
+  // Add each course to its first semester with its best grade
+  courseInfo.forEach(({ firstSemester, bestGrade }) => {
+    if (!semesterGroups[firstSemester]) {
+      semesterGroups[firstSemester] = [];
     }
+    semesterGroups[firstSemester].push(bestGrade);
   });
 
   // Sort semesters chronologically
