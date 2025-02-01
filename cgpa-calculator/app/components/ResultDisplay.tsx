@@ -5,6 +5,7 @@ import { CourseRow, ResultData } from '../types'
 import { groupBySemester, calculateSemesterCGPA, calculateOverallCGPA } from '../utils/calculations'
 import { DownloadableResult } from './DownloadableResult';
 import { useEffect, useState } from 'react'
+import { AdBannerInline } from './AdBannerInline'
 
 interface ResultDisplayProps {
   result: ResultData
@@ -135,18 +136,21 @@ export const ResultDisplay = ({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {Object.entries(groupBySemester(includedCourses)).map(([semester, courses]) => (
-          <SemesterCard
-            key={semester}
-            semester={semester}
-            courses={courses}
-            semesterCGPA={calculateSemesterCGPA(courses)}
-            onRemoveCourse={onRemoveCourse}
-            onAddCourse={onAddCourse}
-            isExpanded={expandedSemesters.includes(semester)}
-            onToggleExpand={() => toggleSemesterExpansion(semester)}
-            isMobile={windowWidth < 1024}
-          />
+        {Object.entries(groupBySemester(includedCourses)).map(([semester, courses], index) => (
+          <>
+            <SemesterCard
+              key={semester}
+              semester={semester}
+              courses={courses}
+              semesterCGPA={calculateSemesterCGPA(courses)}
+              onRemoveCourse={onRemoveCourse}
+              onAddCourse={onAddCourse}
+              isExpanded={expandedSemesters.includes(semester)}
+              onToggleExpand={() => toggleSemesterExpansion(semester)}
+              isMobile={windowWidth < 1024}
+            />
+            {index % 2 === 1 && <AdBannerInline />}
+          </>
         ))}
       </div>
     </motion.div>

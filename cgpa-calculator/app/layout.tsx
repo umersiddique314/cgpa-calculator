@@ -43,9 +43,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2214888899948620"
-     crossOrigin="anonymous">
-        </script>
+        <script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2214888899948620"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className={poppins.className}>
         <ClientLayout>
