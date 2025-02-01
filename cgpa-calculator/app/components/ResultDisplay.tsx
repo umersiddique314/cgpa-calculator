@@ -149,9 +149,9 @@ export const ResultDisplay = ({
               onToggleExpand={() => toggleSemesterExpansion(semester)}
               isMobile={windowWidth < 1024}
             />
-            {index % 2 === 1 && <AdBannerInline />}
           </>
         ))}
+        <AdBannerInline />
       </div>
     </motion.div>
   )
